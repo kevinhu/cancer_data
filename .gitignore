@@ -5,4 +5,4 @@
 !process_depmap.ipynb
 !process_gtex.ipynb
 !process_tcga.ipynb
-*.md
+!*.md
