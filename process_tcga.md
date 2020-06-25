@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.2
+      jupytext_version: 1.5.0
   kernelspec:
     display_name: Python 3
     language: python
@@ -78,17 +78,104 @@ tcga_sample_info.to_hdf("processed/TCGA/tcga_sample_info.hdf",key="tcga_sample_i
 
 ```python
 tcga_muts = pd.read_csv("raw/TCGA/mc3.v0.2.8.PUBLIC.xena.gz",
-                        sep="\t",
-                        index_col=0
+                        sep="\t"
                         )
 
 tcga_muts.to_hdf("processed/tcga/tcga_muts.hdf", key="tcga_muts", mode="w")
 ```
 
+# Binary matrix
+
+```python
+tcga_muts["mut_id"] = tcga_muts["gene"]+"_chr" + \
+    tcga_muts["chr"] + "_" + \
+    tcga_muts["start"].astype(str) + "_" + \
+    tcga_muts["end"].astype(str) + "_" + \
+    tcga_muts["reference"] + "_" + \
+    tcga_muts["alt"]
+
+tcga_muts["value"] = 1
+```
+
+```python
+tcga_mut_counts = Counter(tcga_muts["mut_id"])
+
+mut_frequency_cutoff = 5
+
+tcga_filtered_muts = tcga_muts[tcga_muts["mut_id"].apply(lambda x: tcga_mut_counts[x]>=mut_frequency_cutoff)]
+```
+
+```python
+tcga_mut_mat = pd.pivot_table(tcga_filtered_muts, values="value", index=[
+                            "sample"], columns="mut_id", fill_value=0)
+
+tcga_mut_mat.dtype = bool
+
+tcga_mut_mat.to_hdf("processed/tcga/tcga_mut_mat.hdf", key="tcga_mut_mat", mode="w")
+```
+
+# Mutation info
+
+```python
+tcga_filtered_muts_info = tcga_filtered_muts.drop_duplicates(subset=["mut_id"],keep="first")
+tcga_filtered_muts_info = tcga_filtered_muts_info.drop(["sample","DNA_VAF","SIFT","PolyPhen"],axis=1)
+tcga_filtered_muts_info = tcga_filtered_muts_info.set_index("mut_id")
+tcga_filtered_muts_info.to_csv("processed/tcga/tcga_filtered_muts_info.csv")
+```
+
+# MSI (MANTIS, Bonneville et al.)
+
+```python
+tcga_msi = pd.read_excel("raw/TCGA/NIHMS962713-supplement-File_S2.xlsx")
+tcga_msi = tcga_msi.set_index("Case ID")
+tcga_msi = tcga_msi[tcga_msi.index.map(lambda x: x[:4]=="TCGA")]
+tcga_msi["tumor_code"] = tcga_msi["Tumor Filename"].apply(lambda x: "-".join(x.split("-")[:4])[:-1])
+tcga_msi = tcga_msi.set_index("tumor_code")
+
+tcga_msi.to_hdf("processed/tcga/tcga_msi.h5",key="tcga_msi",mode="w")
+```
+
 # Copy number
 
 
+## Whitelisted
+
+```python
+tcga_cn = pd.read_csv("raw/TCGA/broad.mit.edu_PANCAN_Genome_Wide_SNP_6_whitelisted.gene.xena.gz",
+                      sep="\t",
+                      index_col=0
+                      )
+
+tcga_cn = tcga_cn.T
+tcga_cn = tcga_cn.astype(np.float32)
+```
+
+```python
+tcga_cn_info = pd.read_csv(
+    "raw/TCGA/hugo_gencode_good_hg19_V24lift37_probemap", sep="\t")
+
+tcga_cn_info["chromStart"] = tcga_cn_info["chromStart"].astype(str)
+tcga_cn_info["chromEnd"] = tcga_cn_info["chromEnd"].astype(str)
+
+tcga_cn_info["format_id"] = tcga_cn_info["gene"] + "_" + tcga_cn_info["chrom"] + \
+    "_" + tcga_cn_info["chromStart"] + "_" + tcga_cn_info["chromEnd"]
+
+gene_segment_map = dict(zip(tcga_cn_info["gene"],tcga_cn_info["format_id"]))
+
+tcga_cn.columns = [gene_segment_map.get(x,x) for x in tcga_cn.columns]
+```
+
+```python
+tcga_cn.to_hdf(
+    "processed/TCGA/tcga_cn_whitelisted.hdf", key="tcga_cn", mode="w")
+```
+
 ## Continuous
+
+```python
+tcga_cn_cont = pd.read_hdf(
+    "processed/TCGA/tcga_cn.hdf", key="tcga_cn")
+```
 
 ```python
 tcga_cn = pd.read_csv("raw/TCGA/Gistic2_CopyNumber_Gistic2_all_data_by_genes.gz",
