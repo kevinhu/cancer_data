@@ -127,10 +127,10 @@ tcga_filtered_muts_info.to_csv("processed/tcga/tcga_filtered_muts_info.csv")
 
 ```python
 tcga_msi = pd.read_excel("raw/TCGA/NIHMS962713-supplement-File_S2.xlsx")
+tcga_msi = tcga_msi[tcga_msi["Case ID"].apply(lambda x: x[:4]=="TCGA")]
+tcga_msi["sample_type"] = tcga_msi["Tumor Filename"].apply(lambda x: x.split("-")[3][:-1])
+tcga_msi["Case ID"] = tcga_msi["Case ID"] + "-" + tcga_msi["sample_type"]
 tcga_msi = tcga_msi.set_index("Case ID")
-tcga_msi = tcga_msi[tcga_msi.index.map(lambda x: x[:4]=="TCGA")]
-tcga_msi["tumor_code"] = tcga_msi["Tumor Filename"].apply(lambda x: "-".join(x.split("-")[:4])[:-1])
-tcga_msi = tcga_msi.set_index("tumor_code")
 
 tcga_msi.to_hdf("processed/tcga/tcga_msi.h5",key="tcga_msi",mode="w")
 ```
