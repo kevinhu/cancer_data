@@ -137,10 +137,10 @@ sanger_auc.to_hdf("processed/depmap/sanger_auc.h5",key="sanger_auc",mode="w")
 ## Logfolds
 
 ```python
-primary_logfold = pd.read_csv("raw/depmap/primary-screen-replicate-collapsed-logfold-change.csv",index_col=0)
+primary_logfold = pd.read_csv("raw/depmap/primary-screen-public-tentative_v10-primary-replicate-collapsed-logfold-change.csv",index_col=0)
 secondary_logfold = pd.read_csv("raw/depmap/secondary-screen-replicate-collapsed-logfold-change.csv",index_col=0)
 
-primary_info = pd.read_csv("raw/depmap/primary-screen-replicate-collapsed-treatment-info.csv")
+primary_info = pd.read_csv("raw/depmap/primary-screen-public-tentative_v10-primary-replicate-collapsed-treatment-info.csv")
 secondary_info = pd.read_csv("raw/depmap/secondary-screen-replicate-collapsed-treatment-info.csv")
 
 primary_info["format_name"] = primary_info["name"].fillna("UNNAMED") + "_" + primary_info["column_name"]
@@ -157,66 +157,17 @@ secondary_logfold = secondary_logfold.astype(np.float32)
 ```
 
 ```python
-primary_logfold.to_hdf("processed/depmap/primary_logfold.h5",key="primary_logfold",mode="w")
-secondary_logfold.to_hdf("processed/depmap/secondary_logfold.h5",key="secondary_logfold",mode="w")
-```
+primary_logfold.to_hdf(
+    "processed/depmap/primary_logfold.h5",
+    key="primary_logfold",
+    mode="w"
+)
 
-## Primary screen
-
-```python
-primary_col_meta = pd.read_csv(
-    "raw/depmap/primary-screen-public-tentative_v4-primary-merged-replicate-col-meta.csv")
-
-primary_row_meta = pd.read_csv(
-    "raw/depmap/primary-screen-public-tentative_v4-primary-merged-row-meta.csv")
-
-primary_name_map = dict(zip(primary_row_meta["feature_id"],primary_row_meta["depmap_id"]))
-
-primary_median = pd.read_csv(
-    "raw/depmap/primary-screen-public-tentative_v4-primary-merged-median-lfcvc-cb.csv",index_col=0)
-primary_mad = pd.read_csv(
-    "raw/depmap/primary-screen-public-tentative_v4-primary-merged-mad-lfcvc-cb.csv",index_col=0)
-
-primary_median.index = primary_median.index.map(lambda x: primary_name_map[x])
-primary_mad.index = primary_mad.index.map(lambda x: primary_name_map[x])
-```
-
-```python
-primary_median.to_hdf(
-    "processed/depmap/primary-screen-public-tentative_v4-primary-merged-median-lfcvc-cb.hdf", key="primary_median")
-
-primary_mad.to_hdf(
-    "processed/depmap/primary-screen-public-tentative_v4-primary-merged-mad-lfcvc-cb.hdf", key="primary_mad")
-
-```
-
-## Secondary screen
-
-```python
-secondary_col_meta = pd.read_csv(
-    "raw/depmap/secondary-screen-public-tentative_v3-secondary-merged-replicate-col-meta.csv")
-
-secondary_row_meta = pd.read_csv(
-    "raw/depmap/secondary-screen-public-tentative_v3-secondary-merged-row-meta.csv")
-
-secondary_name_map = dict(zip(secondary_row_meta["feature_id"],secondary_row_meta["depmap_id"]))
-
-secondary_median = pd.read_csv(
-    "raw/depmap/secondary-screen-public-tentative_v3-secondary-merged-median-lfcvc-cb.csv",index_col=0)
-secondary_mad = pd.read_csv(
-    "raw/depmap/secondary-screen-public-tentative_v3-secondary-merged-mad-lfcvc-cb.csv",index_col=0)
-
-secondary_median.index = secondary_median.index.map(lambda x: secondary_name_map[x])
-secondary_mad.index = secondary_mad.index.map(lambda x: secondary_name_map[x])
-```
-
-```python
-secondary_median.to_hdf(
-    "processed/depmap/secondary-screen-public-tentative_v3-secondary-merged-median-lfcvc-cb.hdf", key="secondary_median")
-
-secondary_mad.to_hdf(
-    "processed/depmap/secondary-screen-public-tentative_v3-secondary-merged-mad-lfcvc-cb.hdf", key="secondary_mad")
-
+secondary_logfold.to_hdf(
+    "processed/depmap/secondary_logfold.h5",
+    key="secondary_logfold",
+    mode="w"
+)
 ```
 
 # Copy number
