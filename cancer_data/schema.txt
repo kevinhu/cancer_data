@@ -1,5 +1,11 @@
-type	url	downloaded_name	processed_name	description
-reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta	Homo_sapiens_assembly19.fasta		hg19 FASTA
-reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta.fai	Homo_sapiens_assembly19.fasta.fai		hg19 FASTA index
-reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.dict	Homo_sapiens_assembly19.dict		hg19 FASTA dictionary
-reference	https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes	hg19.chrom.sizes		hg19 chromosome sizes
+type	source	url	downloaded_name	processed_name	description
+reference	broad_reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta	Homo_sapiens_assembly19.fasta		hg19 FASTA
+reference	broad_reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta.fai	Homo_sapiens_assembly19.fasta.fai		hg19 FASTA index
+reference	broad_reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.dict	Homo_sapiens_assembly19.dict		hg19 FASTA dictionary
+reference	ucsc_reference	https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes	hg19.chrom.sizes		hg19 chromosome sizes
+dataset	gtex	https://storage.googleapis.com/gtex_analysis_v8/rna_seq_data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz	GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz	GTEx_gene_TPM.h5	TPM expression levels of genes across GTEx samples
+dataset	gtex	https://api.gdc.cancer.gov/data/104c3fbf-ccd7-4d2c-a422-d9d44644fcb0	gtex_merge_graphs_alt_3prime_C2.confirmed.txt.gz	GTEx_A3SS.h5	Alternative 3' exon inclusions across GTEx samples
+dataset	gtex	https://api.gdc.cancer.gov/data/a07efb27-590e-4101-942f-bfe8e98de7ed	gtex_merge_graphs_alt_5prime_C2.confirmed.txt.gz	GTEx_A5SS.h5	Alternative 5' exon inclusions across GTEx samples
+dataset	gtex	https://api.gdc.cancer.gov/data/a5855b13-b6ef-4266-a6a8-c0ce32b142d4	gtex_merge_graphs_exon_skip_C2.confirmed.txt.gz	GTEx_ES.h5	Skipped-exon inclusions across GTEx samples
+dataset	gtex	https://api.gdc.cancer.gov/data/1a661253-7ec1-4410-aee0-7d58738a71cd	gtex_merge_graphs_intron_retention_C2.confirmed.txt.gz	GTEx_IR.h5	Intron retention inclusions across GTEx samples
+dataset	gtex	https://api.gdc.cancer.gov/data/f2bd9184-1322-4c37-8121-a1a4cb8cd231	gtex_merge_graphs_mutex_exons_C2.confirmed.txt.gz	GTEx_MX.h5	Mutually exclusive exons inclusions across GTEx samples
