@@ -12,6 +12,8 @@ matplotlib = "^3.3.0"
 gtfparse = "^1.2.0"
 scipy = "^1.5.1"
 seaborn = "^0.10.1"
+requests = "^2.24.0"
+tqdm = "^4.48.0"
 
 [tool.poetry.dev-dependencies]
 
