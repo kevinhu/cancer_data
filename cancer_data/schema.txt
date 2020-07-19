@@ -1,0 +1,5 @@
+type	url	downloaded_name	processed_name	description
+reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta	Homo_sapiens_assembly19.fasta		hg19 FASTA
+reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta.fai	Homo_sapiens_assembly19.fasta.fai		hg19 FASTA index
+reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.dict	Homo_sapiens_assembly19.dict		hg19 FASTA dictionary
+reference	https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes	hg19.chrom.sizes		hg19 chromosome sizes

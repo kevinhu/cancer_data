@@ -1,21 +1,18 @@
-from config import DOWNLOAD_DIR
+from config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
 
 from utils import download_from_url
 
-# hg19 FASTA 
-download_from_url(
-    "https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta",
-    f"{DOWNLOAD_DIR}/Homo_sapiens_assembly19.fasta",
-)
+for _, file in SCHEMA.iterrows():
 
-# hg19 FASTA index
-download_from_url(
-    "https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta.fai",
-    f"{DOWNLOAD_DIR}/Homo_sapiens_assembly19.fasta.fai",
-)
+	if file["type"] == "reference":
 
-# hg19 FASTA dictionary
-download_from_url(
-    "https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.dict",
-    f"{DOWNLOAD_DIR}/Homo_sapiens_assembly19.dict",
-)
+		download_from_url(
+		    file["url"],
+		    f"{REFERENCE_DIR}/{file['downloaded_name']}",
+		)
+
+	else:
+		download_from_url(
+		    file["url"],
+		    f"{DOWNLOAD_DIR}/{file['downloaded_name']}",
+		)
