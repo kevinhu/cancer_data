@@ -9,3 +9,5 @@ dataset	gtex	https://api.gdc.cancer.gov/data/a07efb27-590e-4101-942f-bfe8e98de7e
 dataset	gtex	https://api.gdc.cancer.gov/data/a5855b13-b6ef-4266-a6a8-c0ce32b142d4	gtex_merge_graphs_exon_skip_C2.confirmed.txt.gz	GTEx_ES.h5	Skipped-exon inclusions across GTEx samples
 dataset	gtex	https://api.gdc.cancer.gov/data/1a661253-7ec1-4410-aee0-7d58738a71cd	gtex_merge_graphs_intron_retention_C2.confirmed.txt.gz	GTEx_IR.h5	Intron retention inclusions across GTEx samples
 dataset	gtex	https://api.gdc.cancer.gov/data/f2bd9184-1322-4c37-8121-a1a4cb8cd231	gtex_merge_graphs_mutex_exons_C2.confirmed.txt.gz	GTEx_MX.h5	Mutually exclusive exons inclusions across GTEx samples
+dataset	gtex	https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-5214/E-MTAB-5214.sdrf.txt	E-MTAB-5214.sdrf.txt	GTEx_5214_manifest.h5	GTEx samples manifest
+dataset	gtex	https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-2919/E-MTAB-2919.sdrf.txt	E-MTAB-2919.sdrf.txt	GTEx_2919_manifest.h5	GTEx samples manifest
