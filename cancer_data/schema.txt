@@ -32,6 +32,8 @@ dataset	Achilles RNAi sensitivities 	depmap	https://ndownloader.figshare.com/fil
 dataset	DepMap gene expression	depmap	https://ndownloader.figshare.com/files/22897976	CCLE_expression_v2.csv	DepMap_gene_TPM.h5
 dataset	DepMap mutation calls	depmap	https://ndownloader.figshare.com/files/22629110	CCLE_mutations.csv	DepMAp_mutations.h5
 dataset	PRISM primary screen sensitivities	depmap	https://ndownloader.figshare.com/files/20237709	primary-screen-replicate-collapsed-logfold-change.csv	PRISM_primary_logfolds.h5
+dataset	PRISM primary screen metadata	depmap	https://ndownloader.figshare.com/files/20237715	primary-screen-replicate-collapsed-treatment-info.csv	PRISM_primary_info.h5
 dataset	PRISM secondary screen sensitivities	depmap	https://ndownloader.figshare.com/files/20237757	secondary-screen-replicate-collapsed-logfold-change.csv	PRISM_secondary_logfolds.h5
+dataset	PRISM secondary screen metadata	depmap	https://ndownloader.figshare.com/files/20237763	secondary-screen-replicate-collapsed-treatment-info.csv	PRISM_secondary_info.h5
 dataset	CCLE proteomics	depmap	https://gygi.med.harvard.edu/sites/gygi.med.harvard.edu/files/documents/protein_quant_current_normalized.csv.gz	protein_quant_current_normalized.csv.gz	CCLE_proteomics.h5
 dataset	DepMap copy number calls	depmap	https://ndownloader.figshare.com/files/22629107	CCLE_gene_cn.csv	DepMap_copy_number.h5
