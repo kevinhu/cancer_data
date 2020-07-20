@@ -2,19 +2,21 @@ from config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
 
 from utils import download_from_url
 
-for _, file in SCHEMA.iterrows():
+if __name__ == "__main__":
 
-	if file["type"] == "reference":
+	for _, file in SCHEMA.iterrows():
 
-		download_from_url(
-		    file["url"],
-		    f"{REFERENCE_DIR}/{file['downloaded_name']}",
-		    reference_md5 = file['downloaded_md5']
-		)
+		if file["type"] == "reference":
 
-	else:
-		download_from_url(
-		    file["url"],
-		    f"{DOWNLOAD_DIR}/{file['downloaded_name']}",
-		    reference_md5 = file['downloaded_md5']
-		)
+			download_from_url(
+			    file["url"],
+			    f"{REFERENCE_DIR}/{file['downloaded_name']}",
+			    reference_md5 = file['downloaded_md5']
+			)
+
+		elif file["type"] == "primary_dataset":
+			download_from_url(
+			    file["url"],
+			    f"{DOWNLOAD_DIR}/{file['downloaded_name']}",
+			    reference_md5 = file['downloaded_md5']
+			)

@@ -1,10 +1,14 @@
 import requests
 import os
+
 import tqdm
 from tqdm import tqdm
-from hashlib import md5
 
+from hashlib import md5
 from pathlib import Path
+
+import pandas as pd
+from config import PROCESSED_DIR
 
 
 class bcolors:
@@ -16,6 +20,13 @@ class bcolors:
     ENDC = "\033[0m"
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
+
+def file_exists(file_path):
+    return Path(file_path).is_file()
+
+def export_hdf(output_id, df):
+
+    df.to_hdf(f"{PROCESSED_DIR}/{output_id}.h5", key=output_id, mode="w")
 
 
 def md5_match(file_path, reference_md5):
@@ -78,7 +89,7 @@ def download_from_url(
     output_filename = Path(output_path).name
     output_filename_bold = f"{bcolors.BOLD}{output_filename}{bcolors.ENDC}"
 
-    if os.path.isfile(output_path):
+    if output_path(output_path):
 
         if not overwrite:
 
