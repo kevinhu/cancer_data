@@ -25,6 +25,7 @@ dataset	CCLE CGI cluster methylation from RRBS	ccle	https://data.broadinstitute.
 dataset	CCLE enhancer cluster methylation from RRBS	ccle	https://data.broadinstitute.org/ccle/CCLE_RRBS_enh_CpG_clusters_20181119.txt.gz	CCLE_RRBS_enh_CpG_clusters_20181119.txt.gz	CCLE_RRBS_enhancer_clusters.h5
 dataset	CCLE ABSOLUTE copy number	ccle	https://data.broadinstitute.org/ccle/CCLE_ABSOLUTE_combined_20181227.xlsx	CCLE_ABSOLUTE_combined_20181227.xlsx	CCLE_ABSOLUTE.h5
 dataset	CCLE cell line annotations	ccle	https://data.broadinstitute.org/ccle/Cell_lines_annotations_20181226.txt	Cell_lines_annotations_20181226.txt	CCLE_annotations.h5
+dataset	CCLE TERT promoter mutation calls	ccle	https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-019-1186-3/MediaObjects/41586_2019_1186_MOESM8_ESM.xlsx	41586_2019_1186_MOESM8_ESM.xlsx	CCLE_TERTp.h5
 dataset	CCLE MSI estimates	ccle	https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-019-1186-3/MediaObjects/41586_2019_1186_MOESM10_ESM.xlsx	41586_2019_1186_MOESM10_ESM.xlsx	CCLE_MSI.h5
 dataset	CCLE metabolomics measurements	ccle	https://data.broadinstitute.org/ccle/CCLE_metabolomics_20190502.csv	CCLE_metabolomics_20190502.csv	CCLE_metabolomics.h5
 dataset	DepMap cell line sample info	depmap	https://ndownloader.figshare.com/files/22629137	sample_info.csv	DepMap_annotations.h5
