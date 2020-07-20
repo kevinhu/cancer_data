@@ -3,6 +3,8 @@ reference	hg19 FASTA	broad_reference	https://data.broadinstitute.org/snowman/hg1
 reference	hg19 FASTA index	broad_reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.fasta.fai	Homo_sapiens_assembly19.fasta.fai	
 reference	hg19 FASTA dictionary	broad_reference	https://data.broadinstitute.org/snowman/hg19/genomestrip/Homo_sapiens_assembly19.dict	Homo_sapiens_assembly19.dict	
 reference	hg19 chromosome sizes	ucsc_reference	https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes	hg19.chrom.sizes	
+reference	GENCODE v19 genes	broad_reference	https://data.broadinstitute.org/ccle/gencode.v19.genes.v7_model.patched_contigs.gtf.gz	gencode.v19.genes.v7_model.patched_contigs.gtf.gz	
+reference	ENSEMBL GrCh37 release 75	ensembl_reference	http://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz	Homo_sapiens.GRCh37.75.gtf.gz	
 dataset	TPM expression levels of genes across GTEx samples	gtex	https://storage.googleapis.com/gtex_analysis_v8/rna_seq_data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz	GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz	GTEx_gene_TPM.h5
 dataset	Alternative 3' exon inclusions across GTEx samples	gtex	https://api.gdc.cancer.gov/data/104c3fbf-ccd7-4d2c-a422-d9d44644fcb0	gtex_merge_graphs_alt_3prime_C2.confirmed.txt.gz	GTEx_A3SS.h5
 dataset	Alternative 5' exon inclusions across GTEx samples	gtex	https://api.gdc.cancer.gov/data/a07efb27-590e-4101-942f-bfe8e98de7ed	gtex_merge_graphs_alt_5prime_C2.confirmed.txt.gz	GTEx_A5SS.h5
