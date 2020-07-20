@@ -2,6 +2,10 @@ import os
 import pathlib
 import pandas as pd
 
+"""
+Contains configurations and settings used by the rest of the project.
+"""
+
 _PROJECT_DIR = pathlib.Path(__file__).resolve().parent
 
 DATA_DIR = _PROJECT_DIR / "data"

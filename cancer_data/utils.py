@@ -4,6 +4,8 @@ import tqdm
 from tqdm import tqdm
 from hashlib import md5
 
+from pathlib import Path
+
 
 class bcolors:
     HEADER = "\033[95m"
@@ -17,6 +19,23 @@ class bcolors:
 
 
 def md5_match(file_path, reference_md5):
+
+    """
+    Checks if a file matches a provided md5sum
+
+    Parameters
+    ----------
+    file_path: string
+        path to the file to check
+    reference_md5: string
+        md5sum to check
+
+    Returns
+    -------
+    True if the file matches the md5sum, False otherwise
+
+    """
+
     with open(file_path, "rb") as f:
 
         data = f.read()
@@ -30,6 +49,35 @@ def download_from_url(
     url, output_path, overwrite=False, reference_md5=None, is_retry=False
 ):
 
+    """
+    Download a file from a URL.
+
+    Shows progress bar and checks md5sum. Also 
+    checks if file is already downloaded.
+
+    Parameters
+    ----------
+    url: string
+        URL to download from
+    output_path: string
+        path to save the output to
+    overwrite: boolean
+        whether or not to overwrite the file if it already exists
+    reference_md5: string
+        md5sum to check
+    is_retry:
+        whether or not the download is a retry (if the md5sum)
+        does not match, is called again
+
+    Returns
+    -------
+    True if download was successful, False otherwise
+
+    """
+
+    output_filename = Path(output_path).name
+    output_filename_bold = f"{bcolors.BOLD}{output_filename}{bcolors.ENDC}"
+
     if os.path.isfile(output_path):
 
         if not overwrite:
@@ -41,13 +89,13 @@ def download_from_url(
                     if not is_retry:
 
                         print(
-                            f"{output_path} {bcolors.FAIL}does not match{bcolors.ENDC} provided md5sum. Attempting download."
+                            f"{output_filename_bold} {bcolors.FAIL}does not match{bcolors.ENDC} provided md5sum. Attempting download."
                         )
 
                 else:
 
                     print(
-                        f"{output_path} already downloaded and {bcolors.OKGREEN}matches{bcolors.ENDC} provided md5sum."
+                        f"{output_filename_bold} already downloaded and {bcolors.OKGREEN}matches{bcolors.ENDC} provided md5sum."
                     )
 
                     return True
@@ -55,7 +103,7 @@ def download_from_url(
             else:
 
                 print(
-                    f"{output_path} already exists, skipping md5sum check (not provided)"
+                    f"{output_filename_bold} already exists, skipping md5sum check (not provided)"
                 )
 
                 return True
@@ -88,7 +136,7 @@ def download_from_url(
             if not is_retry:
 
                 print(
-                    f"{output_path} {bcolors.FAIL}does not match{bcolors.ENDC} provided md5sum. Attempting second download."
+                    f"{output_filename_bold} {bcolors.FAIL}does not match{bcolors.ENDC} provided md5sum. Attempting second download."
                 )
 
                 download_from_url(
@@ -102,7 +150,7 @@ def download_from_url(
             else:
 
                 print(
-                    f"{bcolors.FAIL}Second download of {output_path} failed. Recommend manual inspection.{bcolors.ENDC}"
+                    f"{bcolors.FAIL}Second download of {output_filename_bold} failed. Recommend manual inspection.{bcolors.ENDC}"
                 )
 
                 return False
@@ -110,7 +158,7 @@ def download_from_url(
         else:
 
             print(
-                f"{output_path} {bcolors.OKGREEN}matches{bcolors.ENDC} provided md5sum."
+                f"{output_filename_bold} {bcolors.OKGREEN}matches{bcolors.ENDC} provided md5sum."
             )
 
     return True
