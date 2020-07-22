@@ -121,6 +121,27 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def ccle_rppa(raw_path, output_id, dependencies):
+
+        check_dependencies(dependencies)
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        ccle_rppa_info = pd.read_hdf(f"{PROCESSED_DIR}/ccle_rppa_info.h5")
+        antibody_name_map = dict(
+            zip(ccle_rppa_info["Antibody_Name"], ccle_rppa_info["format_id"])
+        )
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.columns = map(antibody_name_map.get, df.columns)
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
