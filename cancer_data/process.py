@@ -28,29 +28,27 @@ class Processors:
     def __init__(self):
         return
 
-    def g19_7_definitions(raw_path, output_id, dependencies=None):
+    def g19_7_definitions(raw_path, output_id):
         df = read_gtf(raw_path)
 
         export_hdf(output_id, df)
 
-    def ensembl_75_definitions(raw_path, output_id, dependencies=None):
+    def ensembl_75_definitions(raw_path, output_id):
         df = read_gtf(raw_path)
 
         export_hdf(output_id, df)
 
-    def gtex_2919_manifest(raw_path, output_id, dependencies=None):
+    def gtex_2919_manifest(raw_path, output_id):
         df = pd.read_csv(raw_path, sep="\t")
 
         export_hdf(output_id, df)
 
-    def gtex_5214_manifest(raw_path, output_id, dependencies=None):
+    def gtex_5214_manifest(raw_path, output_id):
         df = pd.read_csv(raw_path, sep="\t")
 
         export_hdf(output_id, df)
 
-    def gtex_manifest(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def gtex_manifest(raw_path, output_id):
 
         gtex_manifest_1 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_2919_manifest.h5")
         gtex_manifest_2 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_5214_manifest.h5")
@@ -61,7 +59,7 @@ class Processors:
 
         export_hdf(output_id, gtex_manifest)
 
-    def gtex_gene_tpm(raw_path, output_id, dependencies=None):
+    def gtex_gene_tpm(raw_path, output_id):
         df = pd.read_csv(raw_path, skiprows=2, index_col=0, sep="\t")
 
         df.index = df["Description"] + "_" + df.index
@@ -75,16 +73,14 @@ class Processors:
 
     # TODO: GTEx splicing
 
-    def ccle_annotations(raw_path, output_id, dependencies=None):
+    def ccle_annotations(raw_path, output_id):
 
         df = pd.read_csv(raw_path, sep="\t")
         df = df.astype(str)
 
         export_hdf(output_id, df)
 
-    def ccle_translocations_svaba(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def ccle_translocations_svaba(raw_path, output_id):
 
         df = pd.read_excel(raw_path)
 
@@ -113,7 +109,7 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    def ccle_rppa_info(raw_path, output_id, dependencies=None):
+    def ccle_rppa_info(raw_path, output_id):
 
         df = pd.read_csv(raw_path)
         df = df.astype(str)
@@ -126,9 +122,7 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    def ccle_rppa(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def ccle_rppa(raw_path, output_id):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -147,9 +141,7 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    def ccle_gene_tpm(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def ccle_gene_tpm(raw_path, output_id):
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:, 1:]
@@ -178,9 +170,7 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    def ccle_transcript_tpm(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def ccle_transcript_tpm(raw_path, output_id):
 
         df = pd.read_csv(raw_path, sep="\t")
 
@@ -212,9 +202,7 @@ class Processors:
 
     # TODO: CCLE exonusage
 
-    def ccle_mirna(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def ccle_mirna(raw_path, output_id):
 
         df = pd.read_csv(raw_path,sep="\t",skiprows=2)
 
@@ -234,9 +222,7 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    def ccle_rrbs_tss1kb(raw_path, output_id, dependencies):
-
-        check_dependencies(dependencies)
+    def ccle_rrbs_tss1kb(raw_path, output_id):
 
         df = pd.read_csv(raw_path,sep="\t",index_col=0)
         df = df.iloc[:-1,2:]
@@ -277,8 +263,10 @@ if __name__ == "__main__":
                 if handler is not None:
 
                     print(f"Processing {bcolors.BOLD}{file['id']}{bcolors.ENDC}")
+
+                    check_dependencies(file["dependencies"])
+
                     handler(
                         f"{DOWNLOAD_DIR}/{file['downloaded_name']}",
-                        file["id"],
-                        file["dependencies"],
+                        file["id"]
                     )
