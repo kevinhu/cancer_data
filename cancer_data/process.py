@@ -14,7 +14,7 @@ from collections import defaultdict
 
 def check_dependencies(dependencies):
 
-    if dependencies is None or dependencies == np.nan:
+    if dependencies is None or np.isnan(dependencies):
         return
 
     for d in dependencies.split(","):
@@ -309,6 +309,15 @@ class Processors:
         )
 
         df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
+
+    def ccle_tertp(raw_path, output_id):
+
+        df = pd.read_excel(raw_path, skiprows=4)
+
+        df = df.set_index("depMapID")
+        df["TERTp_mut"] = df["TERT_promoter_mutation"] != "wildtype"
 
         export_hdf(output_id, df)
 
