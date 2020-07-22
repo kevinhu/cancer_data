@@ -242,6 +242,26 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def ccle_rrbs_tss_clusters(raw_path, output_id):
+
+        df = pd.read_csv(raw_path,sep="\t",index_col=0)
+        df = df.iloc[:-1,2:]
+        df = df.T
+
+        df[df=="\tNA"] = np.nan
+        df[df=="    NA"] = np.nan
+        df[df=="     NA"] = np.nan
+        df = df.astype(np.float16)
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
+
 if __name__ == "__main__":
 
     for _, file in SCHEMA.iterrows():
