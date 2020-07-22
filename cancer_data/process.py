@@ -321,6 +321,20 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def ccle_msi(raw_path, output_id):
+
+        df = pd.read_excel(raw_path, sheet_name="MSI calls")
+
+        df = df[df["CCLE.MSI.call"].isin(["inferred-MSI", "inferred-MSS"])]
+
+        df = df.astype(str)
+
+        df["MSI"] = df["CCLE.MSI.call"] == "inferred-MSI"
+
+        df = df.set_index("depMapID")
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
