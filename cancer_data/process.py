@@ -9,6 +9,16 @@ from utils import bcolors, file_exists, export_hdf
 
 from gtfparse import read_gtf
 
+
+def check_dependencies(dependencies):
+
+    for d in dependencies.split(","):
+
+        d_file = f"{PROCESSED_DIR}/{d}.h5"
+
+        assert file_exists(d_file), f"Dependency {d} does not exist."
+
+
 class Processors:
     def __init__(self):
         return
@@ -35,11 +45,7 @@ class Processors:
 
     def gtex_manifest(raw_path, output_id, dependencies):
 
-        for d in dependencies.split(","):
-
-            d_file = f"{PROCESSED_DIR}/{d}.h5"
-
-            assert file_exists(d_file), f"Dependency {d} does not exist."
+        check_dependencies(dependencies)
 
         gtex_manifest_1 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_2919_manifest.h5")
         gtex_manifest_2 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_5214_manifest.h5")
@@ -62,7 +68,45 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    # todo: GTEx splicing
 
+    def ccle_annotations(raw_path, output_id, dependencies=None):
+
+        df = pd.read_csv(raw_path, sep="\t")
+        df = df.astype(str)
+
+        export_hdf(output_id, df)
+
+    def ccle_translocations_svaba(raw_path, output_id, dependencies):
+
+        check_dependencies(dependencies)
+
+        df = pd.read_excel(raw_path)
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        string_cols = [
+            "CCLE_name",
+            "map_id",
+            "bp1",
+            "bp2",
+            "class",
+            "gene1",
+            "gene2",
+            "site1",
+            "site2",
+            "fusion",
+        ]
+
+        for col in string_cols:
+            df[col] = df[col].astype(str)
+
+        df["depmap_id"] = df["CCLE_name"].apply(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
 
 
 if __name__ == "__main__":
