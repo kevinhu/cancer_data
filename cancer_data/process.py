@@ -207,6 +207,29 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    # TODO: CCLE exonusage
+
+    def ccle_mirna(raw_path, output_id, dependencies):
+
+        check_dependencies(dependencies)
+
+        df = pd.read_csv(raw_path,sep="\t",skiprows=2)
+
+        df.index = df["Description"] + "_" + df["Name"].apply(lambda x: x[1:])
+
+        df = df.iloc[:,2:]
+        df = np.log2(df)
+        df = df.T
+        df = df.astype(np.float16)
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
 
 if __name__ == "__main__":
 
