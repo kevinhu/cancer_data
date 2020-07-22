@@ -89,7 +89,7 @@ def download_from_url(
     output_filename = Path(output_path).name
     output_filename_bold = f"{bcolors.BOLD}{output_filename}{bcolors.ENDC}"
 
-    if output_path(output_path):
+    if file_exists(output_path):
 
         if not overwrite:
 
