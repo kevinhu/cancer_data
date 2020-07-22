@@ -18,6 +18,11 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def ensembl_75_definitions(raw_path, output_id, dependencies=None):
+        df = read_gtf(raw_path)
+
+        export_hdf(output_id, df)
+
     def gtex_2919_manifest(raw_path, output_id, dependencies=None):
         df = pd.read_csv(raw_path, sep="\t")
 
