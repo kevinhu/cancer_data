@@ -108,6 +108,19 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def ccle_rppa_info(raw_path, output_id, dependencies=None):
+
+        df = pd.read_csv(raw_path)
+        df = df.astype(str)
+
+        df["format_id"] = (
+            df["Target_Genes"].apply(lambda x: x.replace(" ", "-"))
+            + "_"
+            + df["Antibody_Name"]
+        )
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
