@@ -11,6 +11,7 @@ from gtfparse import read_gtf
 
 from collections import defaultdict
 
+
 def check_dependencies(dependencies):
 
     for d in dependencies.split(","):
@@ -152,15 +153,49 @@ class Processors:
 
         g19_7_definitions = pd.read_hdf(f"{PROCESSED_DIR}/g19_7_definitions.h5")
 
-        gene_name_map = dict(zip(g19_7_definitions["gene_id"],g19_7_definitions["gene_name"]))
+        gene_name_map = dict(
+            zip(g19_7_definitions["gene_id"], g19_7_definitions["gene_name"])
+        )
         gene_name_map = defaultdict(str, gene_name_map)
 
         gene_names = df.index.map(lambda x: f"{gene_name_map.get(x)}_{x}")
 
         df = df.set_index(gene_names)
-        df = np.log2(df+1)
+        df = np.log2(df + 1)
         df = df.astype(np.float16)
-        
+
+        df = df.T
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
+
+    def ccle_transcript_tpm(raw_path, output_id, dependencies):
+
+        check_dependencies(dependencies)
+
+        df = pd.read_csv(raw_path, sep="\t")
+
+        g19_7_definitions = pd.read_hdf(f"{PROCESSED_DIR}/g19_7_definitions.h5")
+
+        gene_name_map = dict(
+            zip(g19_7_definitions["gene_id"], g19_7_definitions["gene_name"])
+        )
+        gene_name_map = defaultdict(str, gene_name_map)
+
+        df.index = df[["gene_id", "transcript_id"]].apply(
+            lambda x: f"{gene_name_map.get(x['gene_id'])}_{x['transcript_id']}", axis=1
+        )
+
+        df = df.drop(["gene_id", "transcript_id"], axis=1)
+
+        df = np.log2(df + 1)
+        df = df.astype(np.float16)
         df = df.T
 
         ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")

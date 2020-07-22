@@ -16,6 +16,7 @@ requests = "^2.24.0"
 tqdm = "^4.48.0"
 tables = "^3.6.1"
 xlrd = "^1.2.0"
+jupyter = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 
