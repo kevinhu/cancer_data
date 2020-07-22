@@ -204,11 +204,11 @@ class Processors:
 
     def ccle_mirna(raw_path, output_id):
 
-        df = pd.read_csv(raw_path,sep="\t",skiprows=2)
+        df = pd.read_csv(raw_path, sep="\t", skiprows=2)
 
         df.index = df["Description"] + "_" + df["Name"].apply(lambda x: x[1:])
 
-        df = df.iloc[:,2:]
+        df = df.iloc[:, 2:]
         df = np.log2(df)
         df = df.T
         df = df.astype(np.float16)
@@ -224,13 +224,13 @@ class Processors:
 
     def ccle_rrbs_tss1kb(raw_path, output_id):
 
-        df = pd.read_csv(raw_path,sep="\t",index_col=0)
-        df = df.iloc[:-1,2:]
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
+        df = df.iloc[:-1, 2:]
         df = df.T
 
-        df[df=="\tNA"] = np.nan
-        df[df=="    NA"] = np.nan
-        df[df=="     NA"] = np.nan
+        df[df == "\tNA"] = np.nan
+        df[df == "    NA"] = np.nan
+        df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
         ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
@@ -244,13 +244,13 @@ class Processors:
 
     def ccle_rrbs_tss_clusters(raw_path, output_id):
 
-        df = pd.read_csv(raw_path,sep="\t",index_col=0)
-        df = df.iloc[:-1,2:]
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
+        df = df.iloc[:-1, 2:]
         df = df.T
 
-        df[df=="\tNA"] = np.nan
-        df[df=="    NA"] = np.nan
-        df[df=="     NA"] = np.nan
+        df[df == "\tNA"] = np.nan
+        df[df == "    NA"] = np.nan
+        df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
         ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
@@ -264,19 +264,19 @@ class Processors:
 
     def ccle_rrbs_cgi_clusters(raw_path, output_id):
 
-        df = pd.read_csv(raw_path,sep="\t",index_col=0)
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:-1]
 
         df["cluster_pos"] = df.index
-        df['cluster_n'] = df.groupby('cluster_pos').cumcount()+1
+        df["cluster_n"] = df.groupby("cluster_pos").cumcount() + 1
         df.index = df["cluster_pos"].astype(str) + "-" + df["cluster_n"].astype(str)
 
-        df = df.iloc[:,2:-2]
+        df = df.iloc[:, 2:-2]
         df = df.T
 
-        df[df=="\tNA"] = np.nan
-        df[df=="    NA"] = np.nan
-        df[df=="     NA"] = np.nan
+        df[df == "\tNA"] = np.nan
+        df[df == "    NA"] = np.nan
+        df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
         ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
@@ -287,6 +287,31 @@ class Processors:
         df.index = df.index.map(ccle_to_depmap.get)
 
         export_hdf(output_id, df)
+
+    def ccle_rrbs_enhancer_clusters(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
+
+        df.index = df.index + "_" + df.groupby(level=0).cumcount().astype(str)
+
+        df = df.iloc[:, 2:]
+        df.index = df.index.map(lambda x: x.replace("_", "-")) + "_enh"
+        df = df.T
+
+        df[df == "\tNA"] = np.nan
+        df[df == "    NA"] = np.nan
+        df[df == "     NA"] = np.nan
+        df = df.astype(np.float16)
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
@@ -312,7 +337,4 @@ if __name__ == "__main__":
 
                     check_dependencies(file["dependencies"])
 
-                    handler(
-                        f"{DOWNLOAD_DIR}/{file['downloaded_name']}",
-                        file["id"]
-                    )
+                    handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}", file["id"])
