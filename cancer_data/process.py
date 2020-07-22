@@ -14,6 +14,9 @@ from collections import defaultdict
 
 def check_dependencies(dependencies):
 
+    if dependencies is None or dependencies == np.nan:
+        return
+
     for d in dependencies.split(","):
 
         d_file = f"{PROCESSED_DIR}/{d}.h5"
@@ -220,6 +223,28 @@ class Processors:
         df = df.iloc[:,2:]
         df = np.log2(df)
         df = df.T
+        df = df.astype(np.float16)
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        export_hdf(output_id, df)
+
+    def ccle_rrbs_tss1kb(raw_path, output_id, dependencies):
+
+        check_dependencies(dependencies)
+
+        df = pd.read_csv(raw_path,sep="\t",index_col=0)
+        df = df.iloc[:-1,2:]
+        df = df.T
+
+        df[df=="\tNA"] = np.nan
+        df[df=="    NA"] = np.nan
+        df[df=="     NA"] = np.nan
         df = df.astype(np.float16)
 
         ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
