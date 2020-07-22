@@ -13,17 +13,10 @@ class Processors:
     def __init__(self):
         return
 
-    def gtex_gene_tpm(raw_path, file_id, dependencies=None):
-        df = pd.read_csv(raw_path, skiprows=2, index_col=0, sep="\t")
+    def g19_7_definitions(raw_path, output_id, dependencies=None):
+        df = read_gtf(raw_path)
 
-        df.index = df["Description"] + "_" + df.index
-        df.drop(["Description"], axis=1, inplace=True)
-        df = df.T
-        df = np.log2(df + 1)
-
-        df = df.astype(np.float16)
-
-        export_hdf(file_id, df)
+        export_hdf(output_id, df)
 
     def gtex_2919_manifest(raw_path, output_id, dependencies=None):
         df = pd.read_csv(raw_path, sep="\t")
@@ -51,6 +44,18 @@ class Processors:
         gtex_manifest = gtex_manifest.astype(str)
 
         export_hdf(output_id, gtex_manifest)
+
+    def gtex_gene_tpm(raw_path, output_id, dependencies=None):
+        df = pd.read_csv(raw_path, skiprows=2, index_col=0, sep="\t")
+
+        df.index = df["Description"] + "_" + df.index
+        df.drop(["Description"], axis=1, inplace=True)
+        df = df.T
+        df = np.log2(df + 1)
+
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
 
 
 
