@@ -490,7 +490,16 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    # TODO: DepMap mutations
+    def depmap_mutations(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, sep="\t")
+
+        df = df.astype(str)
+
+        df["Start_position"] = df["Start_position"].astype(int)
+        df["End_position"] = df["End_position"].astype(int)
+
+        export_hdf(output_id, df)
 
     def prism_primary_info(raw_path, output_id):
 
@@ -616,9 +625,7 @@ if __name__ == "__main__":
 
             if file_exists(output_path):
 
-                print(
-                    f"{id_bold} already processed, skipping"
-                )
+                print(f"{id_bold} already processed, skipping")
 
             else:
 
@@ -632,6 +639,8 @@ if __name__ == "__main__":
 
                     handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}", file["id"])
 
-                else: 
+                else:
 
-                    print(f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping")
+                    print(
+                        f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
+                    )
