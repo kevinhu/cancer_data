@@ -721,6 +721,14 @@ class Processors:
 
         return df
 
+    def tcga_cn_thresholded(raw_path):
+
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
+        df = df.T
+        df = df.astype(np.float16)
+
+        return df
+
 
 if __name__ == "__main__":
 
