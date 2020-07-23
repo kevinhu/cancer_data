@@ -15,3 +15,4 @@ PROCESSED_DIR = DATA_DIR / "processed"
 PREVIEW_DIR = DATA_DIR / "preview"
 
 SCHEMA = pd.read_csv(_PROJECT_DIR / "schema.txt", sep="\t")
+SCHEMA.index = SCHEMA["id"]
