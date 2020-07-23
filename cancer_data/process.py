@@ -463,6 +463,21 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def prism_secondary_logfold(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        prism_secondary_info = pd.read_hdf(f"{PROCESSED_DIR}/prism_secondary_info.h5")
+        primary_name_map = dict(
+            zip(prism_secondary_info["column_name"], prism_secondary_info["format_name"])
+        )
+
+        df.columns = map(primary_name_map.get, df.columns)
+
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
