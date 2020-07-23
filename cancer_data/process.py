@@ -162,8 +162,6 @@ class Processors:
 
         return gtex_splicing(raw_path)
 
-    # TODO: GTEx splicing
-
     def ccle_annotations(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t")
@@ -690,6 +688,18 @@ class Processors:
             df[col] = df[col].astype(str)
 
         df.index = df.index.astype(str)
+
+        return df
+
+    def tcga_mutations(raw_path):
+
+        df = pd.read_csv(raw_path, sep="\t")
+
+        df = df.astype(str)
+        df["start"] = df["start"].astype(int)
+        df["end"] = df["end"].astype(int)
+
+        df["DNA_VAF"] = df["DNA_VAF"].astype(np.float16)
 
         return df
 
