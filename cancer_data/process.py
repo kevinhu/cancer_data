@@ -1,4 +1,4 @@
-from config import DOWNLOAD_DIR, PROCESSED_DIR, SCHEMA
+from config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 
 import os
 
@@ -32,6 +32,15 @@ def check_dependencies(dependencies):
 def parentheses_to_snake(x):
     x_split = x.split(" (")
     return f"{x_split[0]}_{x_split[1][:-1]}"
+
+
+def generate_preview(output_id):
+
+    PREVIEW_LEN = 10
+
+    df = pd.read_hdf(f"{PROCESSED_DIR}/{output_id}.h5", stop=PREVIEW_LEN)
+
+    df.to_csv(f"{PREVIEW_DIR}/{output_id}.txt",sep="\t")
 
 
 class Processors:
@@ -638,6 +647,8 @@ if __name__ == "__main__":
                     check_dependencies(file["dependencies"])
 
                     handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}", file["id"])
+
+                    generate_preview(file["id"])
 
                 else:
 
