@@ -47,27 +47,27 @@ class Processors:
     def __init__(self):
         return
 
-    def g19_7_definitions(raw_path, output_id):
+    def g19_7_definitions(raw_path):
         df = read_gtf(raw_path)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ensembl_75_definitions(raw_path, output_id):
+    def ensembl_75_definitions(raw_path):
         df = read_gtf(raw_path)
 
-        export_hdf(output_id, df)
+        return df
 
-    def gtex_2919_manifest(raw_path, output_id):
+    def gtex_2919_manifest(raw_path):
         df = pd.read_csv(raw_path, sep="\t")
 
-        export_hdf(output_id, df)
+        return df
 
-    def gtex_5214_manifest(raw_path, output_id):
+    def gtex_5214_manifest(raw_path):
         df = pd.read_csv(raw_path, sep="\t")
 
-        export_hdf(output_id, df)
+        return df
 
-    def gtex_manifest(raw_path, output_id):
+    def gtex_manifest(raw_path):
 
         gtex_manifest_1 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_2919_manifest.h5")
         gtex_manifest_2 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_5214_manifest.h5")
@@ -78,7 +78,7 @@ class Processors:
 
         export_hdf(output_id, gtex_manifest)
 
-    def gtex_gene_tpm(raw_path, output_id):
+    def gtex_gene_tpm(raw_path):
         df = pd.read_csv(raw_path, skiprows=2, index_col=0, sep="\t")
 
         df.index = df["Description"] + "_" + df.index
@@ -88,18 +88,18 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
     # TODO: GTEx splicing
 
-    def ccle_annotations(raw_path, output_id):
+    def ccle_annotations(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t")
         df = df.astype(str)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_translocations_svaba(raw_path, output_id):
+    def ccle_translocations_svaba(raw_path):
 
         df = pd.read_excel(raw_path)
 
@@ -126,9 +126,9 @@ class Processors:
 
         df["depmap_id"] = df["CCLE_name"].apply(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_rppa_info(raw_path, output_id):
+    def ccle_rppa_info(raw_path):
 
         df = pd.read_csv(raw_path)
         df = df.astype(str)
@@ -139,9 +139,9 @@ class Processors:
             + df["Antibody_Name"]
         )
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_rppa(raw_path, output_id):
+    def ccle_rppa(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -158,9 +158,9 @@ class Processors:
         df.columns = map(antibody_name_map.get, df.columns)
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_gene_tpm(raw_path, output_id):
+    def ccle_gene_tpm(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:, 1:]
@@ -187,9 +187,9 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_transcript_tpm(raw_path, output_id):
+    def ccle_transcript_tpm(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t")
 
@@ -217,9 +217,9 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_exonusage(raw_path, output_id):
+    def ccle_exonusage(raw_path):
         def reorder_exon(exon):
             exon_split = exon.split("_")
             return "_".join(exon_split[3:]) + "_" + "_".join(exon_split[:3])
@@ -254,9 +254,9 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_mirna(raw_path, output_id):
+    def ccle_mirna(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t", skiprows=2)
 
@@ -274,29 +274,9 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_rrbs_tss1kb(raw_path, output_id):
-
-        df = pd.read_csv(raw_path, sep="\t", index_col=0)
-        df = df.iloc[:-1, 2:]
-        df = df.T
-
-        df[df == "\tNA"] = np.nan
-        df[df == "    NA"] = np.nan
-        df[df == "     NA"] = np.nan
-        df = df.astype(np.float16)
-
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
-        ccle_to_depmap = dict(
-            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
-        )
-
-        df.index = df.index.map(ccle_to_depmap.get)
-
-        export_hdf(output_id, df)
-
-    def ccle_rrbs_tss_clusters(raw_path, output_id):
+    def ccle_rrbs_tss1kb(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:-1, 2:]
@@ -314,9 +294,29 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_rrbs_cgi_clusters(raw_path, output_id):
+    def ccle_rrbs_tss_clusters(raw_path):
+
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
+        df = df.iloc[:-1, 2:]
+        df = df.T
+
+        df[df == "\tNA"] = np.nan
+        df[df == "    NA"] = np.nan
+        df[df == "     NA"] = np.nan
+        df = df.astype(np.float16)
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        return df
+
+    def ccle_rrbs_cgi_clusters(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:-1]
@@ -340,9 +340,9 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_rrbs_enhancer_clusters(raw_path, output_id):
+    def ccle_rrbs_enhancer_clusters(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
 
@@ -364,18 +364,18 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_tertp(raw_path, output_id):
+    def ccle_tertp(raw_path):
 
         df = pd.read_excel(raw_path, skiprows=4)
 
         df = df.set_index("depMapID")
         df["TERTp_mut"] = df["TERT_promoter_mutation"] != "wildtype"
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_msi(raw_path, output_id):
+    def ccle_msi(raw_path):
 
         df = pd.read_excel(raw_path, sheet_name="MSI calls")
 
@@ -387,9 +387,9 @@ class Processors:
 
         df = df.set_index("depMapID")
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_metabolomics(raw_path, output_id):
+    def ccle_metabolomics(raw_path):
 
         df = pd.read_csv(raw_path)
 
@@ -400,9 +400,9 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def ccle_proteomics(raw_path, output_id):
+    def ccle_proteomics(raw_path):
 
         df = pd.read_csv(raw_path)
         df.index = df["Gene_Symbol"].fillna("UNNAMED") + "_" + df["Uniprot_Acc"]
@@ -423,9 +423,9 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def depmap_annotations(raw_path, output_id):
+    def depmap_annotations(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -438,9 +438,9 @@ class Processors:
 
         df = df.astype(str)
 
-        export_hdf(output_id, df)
+        return df
 
-    def avana(raw_path, output_id):
+    def avana(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -448,9 +448,9 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def drive(raw_path, output_id):
+    def drive(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -468,9 +468,9 @@ class Processors:
         df = df.T
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def achilles(raw_path, output_id):
+    def achilles(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -488,18 +488,18 @@ class Processors:
         df = df.T
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def depmap_gene_tpm(raw_path, output_id):
+    def depmap_gene_tpm(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
         df.columns = map(parentheses_to_snake, df.columns)
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def depmap_mutations(raw_path, output_id):
+    def depmap_mutations(raw_path):
 
         df = pd.read_csv(raw_path, sep="\t")
 
@@ -508,18 +508,18 @@ class Processors:
         df["Start_position"] = df["Start_position"].astype(int)
         df["End_position"] = df["End_position"].astype(int)
 
-        export_hdf(output_id, df)
+        return df
 
-    def prism_primary_info(raw_path, output_id):
+    def prism_primary_info(raw_path):
 
         df = pd.read_csv(raw_path)
 
         df["format_name"] = df["name"].fillna("UNNAMED") + "_" + df["column_name"]
         df = df.astype(str)
 
-        export_hdf(output_id, df)
+        return df
 
-    def prism_primary_logfold(raw_path, output_id):
+    def prism_primary_logfold(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -532,18 +532,18 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def prism_secondary_info(raw_path, output_id):
+    def prism_secondary_info(raw_path):
 
         df = pd.read_csv(raw_path)
 
         df["format_name"] = df["name"].fillna("UNNAMED") + "_" + df["column_name"]
         df = df.astype(str)
 
-        export_hdf(output_id, df)
+        return df
 
-    def prism_secondary_logfold(raw_path, output_id):
+    def prism_secondary_logfold(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -558,18 +558,18 @@ class Processors:
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def depmap_copy_number(raw_path, output_id):
+    def depmap_copy_number(raw_path):
 
         df = pd.read_csv(raw_path, index_col=0)
         df.columns = map(parentheses_to_snake, df.columns)
 
         df = df.astype(np.float16)
 
-        export_hdf(output_id, df)
+        return df
 
-    def tcga_annotations(raw_path, output_id):
+    def tcga_annotations(raw_path):
 
         TCGA_MAP = {
             "acute myeloid leukemia": "LAML",
@@ -619,7 +619,7 @@ class Processors:
 
         df.index = df.index.astype(str)
 
-        export_hdf(output_id, df)
+        return df
 
 
 if __name__ == "__main__":
@@ -646,7 +646,8 @@ if __name__ == "__main__":
 
                     check_dependencies(file["dependencies"])
 
-                    handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}", file["id"])
+                    df = handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}")
+                    export_hdf(df, file["id"])
 
                     generate_preview(file["id"])
 
