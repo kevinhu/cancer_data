@@ -469,10 +469,35 @@ class Processors:
 
         prism_secondary_info = pd.read_hdf(f"{PROCESSED_DIR}/prism_secondary_info.h5")
         primary_name_map = dict(
-            zip(prism_secondary_info["column_name"], prism_secondary_info["format_name"])
+            zip(
+                prism_secondary_info["column_name"], prism_secondary_info["format_name"]
+            )
         )
 
         df.columns = map(primary_name_map.get, df.columns)
+
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
+    def ccle_proteomics(raw_path, output_id):
+
+        df = pd.read_csv(raw_path)
+        df.index = df["Gene_Symbol"].fillna("UNNAMED") + "_" + df["Uniprot_Acc"]
+
+        df = df.iloc[:, 48:]
+
+        df = df.T
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(lambda x: "_".join(x.split("_")[:-1]))
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        df = df[~df.index.duplicated(keep="first")]
 
         df = df.astype(np.float16)
 
