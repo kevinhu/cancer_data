@@ -454,6 +454,15 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def prism_secondary_info(raw_path, output_id):
+
+        df = pd.read_csv(raw_path)
+
+        df["format_name"] = df["name"].fillna("UNNAMED") + "_" + df["column_name"]
+        df = df.astype(str)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
