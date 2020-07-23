@@ -419,6 +419,15 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def depmap_gene_tpm(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, index_col=0)
+        df.columns = map(parentheses_to_snake, df.columns)
+
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
