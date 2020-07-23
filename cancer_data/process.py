@@ -335,6 +335,19 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def ccle_metabolomics(raw_path, output_id):
+
+        df = pd.read_csv(raw_path)
+
+        df["DepMap_ID"] = df["DepMap_ID"].astype(str)
+
+        df = df.set_index("DepMap_ID")
+        df = df.drop(["CCLE_ID"],axis=1)
+
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
