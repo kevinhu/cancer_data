@@ -612,10 +612,12 @@ if __name__ == "__main__":
 
             output_path = f"{PROCESSED_DIR}/{file['id']}.h5"
 
+            id_bold = f"{bcolors.BOLD}{file['id']}{bcolors.ENDC}"
+
             if file_exists(output_path):
 
                 print(
-                    f"{bcolors.BOLD}{file['id']}{bcolors.ENDC} already processed, skipping"
+                    f"{id_bold} already processed, skipping"
                 )
 
             else:
@@ -624,8 +626,12 @@ if __name__ == "__main__":
 
                 if handler is not None:
 
-                    print(f"Processing {bcolors.BOLD}{file['id']}{bcolors.ENDC}")
+                    print(f"Processing {id_bold}")
 
                     check_dependencies(file["dependencies"])
 
                     handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}", file["id"])
+
+                else: 
+
+                    print(f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping")
