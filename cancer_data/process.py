@@ -703,6 +703,16 @@ class Processors:
 
         return df
 
+    def tcga_msi(raw_path):
+
+        df = pd.read_excel(raw_path)
+        df = df[df["Case ID"].apply(lambda x: x[:4] == "TCGA")]
+        df["sample_type"] = df["Tumor Filename"].apply(lambda x: x.split("-")[3][:-1])
+        df["Case ID"] = df["Case ID"] + "-" + df["sample_type"]
+        df = df.set_index("Case ID")
+
+        return df
+
 
 if __name__ == "__main__":
 
