@@ -15,7 +15,7 @@ from collections import defaultdict
 
 def check_dependencies(dependencies):
 
-    if dependencies is None or dependencies!=dependencies:
+    if dependencies is None or dependencies != dependencies:
         return
 
     for d in dependencies.split(","):
@@ -425,6 +425,17 @@ class Processors:
         df.columns = map(parentheses_to_snake, df.columns)
 
         df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
+    # TODO: DepMap mutations
+
+    def prism_primary_info(raw_path, output_id):
+
+        df = pd.read_csv(raw_path)
+
+        df["format_name"] = df["name"].fillna("UNNAMED") + "_" + df["column_name"]
+        df = df.astype(str)
 
         export_hdf(output_id, df)
 
