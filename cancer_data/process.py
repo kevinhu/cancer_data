@@ -17,18 +17,6 @@ import re
 from functools import reduce
 
 
-def check_dependencies(dependencies):
-
-    if dependencies is None or dependencies != dependencies:
-        return
-
-    for d in dependencies.split(","):
-
-        d_file = f"{PROCESSED_DIR}/{d}.h5"
-
-        assert file_exists(d_file), f"Dependency {d} does not exist."
-
-
 def concat_cols(df, cols, delim):
     cols_str = [df[x].astype(str) for x in cols]
 
@@ -65,7 +53,7 @@ def gtex_splicing(raw_path):
 
     df = df.set_index("exon_id")
 
-    gtex_manifest = Datsets.load("gtex_manifest")
+    gtex_manifest = Datasets.load("gtex_manifest")
     sra_to_gtex = dict(
         zip(gtex_manifest["Comment[ENA_RUN]"], gtex_manifest["Source Name"])
     )
@@ -763,37 +751,62 @@ class Processors:
         return df
 
 
-if __name__ == "__main__":
+def check_dependencies(dependencies):
 
-    for _, file in SCHEMA.iterrows():
+    if dependencies is None or dependencies != dependencies:
+        return
 
-        if file["type"] in ["primary_dataset", "secondary_dataset"]:
+    for d in dependencies.split(","):
 
-            output_path = f"{PROCESSED_DIR}/{file['id']}.h5"
+        d_file = f"{PROCESSED_DIR}/{d}.h5"
 
-            id_bold = f"{bcolors.BOLD}{file['id']}{bcolors.ENDC}"
+        assert file_exists(d_file), f"Dependency {d} does not exist."
 
-            if file_exists(output_path):
 
-                print(f"{id_bold} already processed, skipping")
+def process(dataset_id, downloaded_name, dependencies, dataset_type):
+
+    if dataset_type in ["primary_dataset", "secondary_dataset"]:
+
+        output_path = f"{PROCESSED_DIR}/{dataset_id}.h5"
+
+        id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
+
+        if file_exists(output_path):
+
+            print(f"{id_bold} already processed, skipping")
+
+        else:
+
+            handler = getattr(Processors, dataset_id, None)
+
+            if handler is not None:
+
+                print(f"Processing {id_bold}")
+
+                check_dependencies(dependencies)
+
+                if dataset_type in ["primary_dataset"]:
+                    df = handler(DOWNLOAD_DIR / downloaded_name)
+
+                elif dataset_type in ["secondary_dataset"]:
+                    df = handler()
+
+                export_hdf(dataset_id, df)
+
+                generate_preview(dataset_id)
 
             else:
 
-                handler = getattr(Processors, file["id"], None)
+                print(
+                    f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
+                )
 
-                if handler is not None:
+def process_all():
 
-                    print(f"Processing {id_bold}")
+    for _, file in SCHEMA.iterrows():
 
-                    check_dependencies(file["dependencies"])
+        process(file["id"], file["downloaded_name"], file["dependencies"], file["type"])
 
-                    df = handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}")
-                    export_hdf(file["id"], df)
+if __name__ == "__main__":
 
-                    generate_preview(file["id"])
-
-                else:
-
-                    print(
-                        f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
-                    )
+    process_all()
