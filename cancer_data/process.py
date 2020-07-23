@@ -342,9 +342,24 @@ class Processors:
         df["DepMap_ID"] = df["DepMap_ID"].astype(str)
 
         df = df.set_index("DepMap_ID")
-        df = df.drop(["CCLE_ID"],axis=1)
+        df = df.drop(["CCLE_ID"], axis=1)
 
         df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
+    def depmap_annotations(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        df["display_disease"] = df["lineage"].apply(
+            lambda x: x.replace("_", " ").capitalize()
+        )
+        df["display_disease"] = df["display_disease"].apply(
+            lambda x: "Unknown" if x == " " else x
+        )
+
+        df = df.astype(str)
 
         export_hdf(output_id, df)
 
