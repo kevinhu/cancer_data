@@ -378,6 +378,26 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def drive(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        depmap_annotations = pd.read_hdf(f"{PROCESSED_DIR}/depmap_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
+        )
+        
+        df.columns = map(ccle_to_depmap.get, df.columns)
+        df.index = df.index.map(parentheses_to_snake)
+
+        df.columns = df.columns.astype(str)
+        df.index = df.index.astype(str)
+
+        df = df.T
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
