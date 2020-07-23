@@ -118,7 +118,7 @@ class Processors:
 
         return df
 
-    def gtex_manifest(raw_path):
+    def gtex_manifest(raw_path=None):
 
         gtex_manifest_1 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_2919_manifest.h5")
         gtex_manifest_2 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_5214_manifest.h5")
@@ -325,6 +325,22 @@ class Processors:
         df = df.astype(np.float16)
 
         return df
+
+    def ccle_exonusage_filtered(raw_path=None):
+
+        ccle_exonusage = pd.read_hdf(f"{PROCESSED_DIR}/ccle_exonusage.h5")
+
+        MIN_VALID_COUNT = 100
+
+        exonusage_nans = ccle_exonusage.isna().sum(axis=0)
+
+        keep_cols = ccle_exonusage.columns[
+            exonusage_nans < len(ccle_exonusage) - MIN_VALID_COUNT
+        ]
+
+        ccle_exonusage = ccle_exonusage[keep_cols]
+
+        return ccle_exonusage
 
     def ccle_mirna(raw_path):
 
