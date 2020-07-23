@@ -12,6 +12,10 @@ from gtfparse import read_gtf
 
 from collections import defaultdict
 
+import gzip
+import tempfile
+import re
+
 
 def check_dependencies(dependencies):
 
@@ -206,7 +210,42 @@ class Processors:
 
         export_hdf(output_id, df)
 
-    # TODO: CCLE exonusage
+    def ccle_exonusage(raw_path, output_id):
+        def reorder_exon(exon):
+            exon_split = exon.split("_")
+            return "_".join(exon_split[3:]) + "_" + "_".join(exon_split[:3])
+
+        temp = tempfile.NamedTemporaryFile(mode="wb")
+
+        with gzip.open(raw_path, "rb") as f:
+
+            for line in f:
+
+                line = re.sub(b"[^\S\t\n\r]+NA\t", b"nan\t", line)
+                line = re.sub(b"[^\S\t\n\r]+NA\n", b"nan\n", line)
+
+                temp.write(line)
+
+        df = pd.read_csv(temp.name, skiprows=2, index_col=0, sep="\t")
+
+        temp.close()
+
+        df.index = df.index.map(reorder_exon)
+
+        df.index = pd.Series(df.index, index=df.index) + "_" + pd.Series(df["gene_id"])
+        df = df.iloc[:, 1:]
+        df = df.T
+
+        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
+        )
+
+        df.index = df.index.map(ccle_to_depmap.get)
+
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
 
     def ccle_mirna(raw_path, output_id):
 
