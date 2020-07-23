@@ -16,6 +16,8 @@ import gzip
 import tempfile
 import re
 
+from functools import reduce
+
 
 def check_dependencies(dependencies):
 
@@ -29,6 +31,55 @@ def check_dependencies(dependencies):
         assert file_exists(d_file), f"Dependency {d} does not exist."
 
 
+def concat_cols(df, cols, delim):
+    cols_str = [df[x].astype(str) for x in cols]
+
+    return reduce(lambda a, b: a + delim + b, cols_str)
+
+
+def gtex_splicing(raw_path):
+
+    df = pd.read_csv(raw_path, sep="\t")
+
+    df["exon_id"] = concat_cols(
+        df,
+        [
+            "gene_name",
+            "event_type",
+            "event_chr",
+            "event_coordinates",
+            "alt_region_coordinates",
+        ],
+        "_",
+    )
+
+    df = df.drop(
+        [
+            "event_id",
+            "event_type",
+            "event_chr",
+            "event_coordinates",
+            "alt_region_coordinates",
+            "gene_name",
+        ],
+        axis=1,
+    )
+
+    df = df.set_index("exon_id")
+
+    gtex_manifest = pd.read_hdf(f"{PROCESSED_DIR}/gtex_manifest.h5")
+    sra_to_gtex = dict(
+        zip(gtex_manifest["Comment[ENA_RUN]"], gtex_manifest["Source Name"])
+    )
+
+    df.columns = [sra_to_gtex[x[:-8]] for x in df.columns]
+
+    df = df.T
+    df = df.astype(np.float16)
+
+    return df
+
+
 def parentheses_to_snake(x):
     x_split = x.split(" (")
     return f"{x_split[0]}_{x_split[1][:-1]}"
@@ -40,7 +91,7 @@ def generate_preview(output_id):
 
     df = pd.read_hdf(f"{PROCESSED_DIR}/{output_id}.h5", stop=PREVIEW_LEN)
 
-    df.to_csv(f"{PREVIEW_DIR}/{output_id}.txt",sep="\t")
+    df.to_csv(f"{PREVIEW_DIR}/{output_id}.txt", sep="\t")
 
 
 class Processors:
@@ -79,6 +130,7 @@ class Processors:
         export_hdf(output_id, gtex_manifest)
 
     def gtex_gene_tpm(raw_path):
+
         df = pd.read_csv(raw_path, skiprows=2, index_col=0, sep="\t")
 
         df.index = df["Description"] + "_" + df.index
@@ -89,6 +141,26 @@ class Processors:
         df = df.astype(np.float16)
 
         return df
+
+    def gtex_a3ss(raw_path):
+
+        return gtex_splicing(raw_path)
+
+    def gtex_a5ss(raw_path):
+
+        return gtex_splicing(raw_path)
+
+    def gtex_es(raw_path):
+
+        return gtex_splicing(raw_path)
+
+    def gtex_ir(raw_path):
+
+        return gtex_splicing(raw_path)
+
+    def gtex_mx(raw_path):
+
+        return gtex_splicing(raw_path)
 
     # TODO: GTEx splicing
 
@@ -647,7 +719,7 @@ if __name__ == "__main__":
                     check_dependencies(file["dependencies"])
 
                     df = handler(f"{DOWNLOAD_DIR}/{file['downloaded_name']}")
-                    export_hdf(df, file["id"])
+                    export_hdf(file["id"], df)
 
                     generate_preview(file["id"])
 
