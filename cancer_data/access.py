@@ -1,6 +1,8 @@
 from config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 from utils import file_exists
 
+import pandas as pd
+
 class Datasets:
 
 	def load(dataset_id):

@@ -1,8 +1,6 @@
 from config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
+from access import Datasets
 
-import os
-
-import math
 import numpy as np
 import pandas as pd
 
@@ -67,7 +65,7 @@ def gtex_splicing(raw_path):
 
     df = df.set_index("exon_id")
 
-    gtex_manifest = pd.read_hdf(f"{PROCESSED_DIR}/gtex_manifest.h5")
+    gtex_manifest = Datsets.load("gtex_manifest")
     sra_to_gtex = dict(
         zip(gtex_manifest["Comment[ENA_RUN]"], gtex_manifest["Source Name"])
     )
@@ -120,14 +118,14 @@ class Processors:
 
     def gtex_manifest(raw_path=None):
 
-        gtex_manifest_1 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_2919_manifest.h5")
-        gtex_manifest_2 = pd.read_hdf(f"{PROCESSED_DIR}/gtex_5214_manifest.h5")
+        gtex_manifest_1 = Datasets.load("gtex_2919_manifest")
+        gtex_manifest_2 = Datasets.load("gtex_5214_manifest")
 
         gtex_manifest = pd.concat([gtex_manifest_1, gtex_manifest_2], axis=0, sort=True)
 
         gtex_manifest = gtex_manifest.astype(str)
 
-        export_hdf(output_id, gtex_manifest)
+        return gtex_manifest
 
     def gtex_gene_tpm(raw_path):
 
@@ -173,7 +171,7 @@ class Processors:
 
         df = pd.read_excel(raw_path)
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -215,12 +213,12 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        ccle_rppa_info = pd.read_hdf(f"{PROCESSED_DIR}/ccle_rppa_info.h5")
+        ccle_rppa_info = Datasets.load("ccle_rppa_info")
         antibody_name_map = dict(
             zip(ccle_rppa_info["Antibody_Name"], ccle_rppa_info["format_id"])
         )
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -235,7 +233,7 @@ class Processors:
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:, 1:]
 
-        g19_7_definitions = pd.read_hdf(f"{PROCESSED_DIR}/g19_7_definitions.h5")
+        g19_7_definitions = Datasets.load("g19_7_definitions")
 
         gene_name_map = dict(
             zip(g19_7_definitions["gene_id"], g19_7_definitions["gene_name"])
@@ -250,7 +248,7 @@ class Processors:
 
         df = df.T
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -263,7 +261,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, sep="\t")
 
-        g19_7_definitions = pd.read_hdf(f"{PROCESSED_DIR}/g19_7_definitions.h5")
+        g19_7_definitions = Datasets.load("g19_7_definitions")
 
         gene_name_map = dict(
             zip(g19_7_definitions["gene_id"], g19_7_definitions["gene_name"])
@@ -280,7 +278,7 @@ class Processors:
         df = df.astype(np.float16)
         df = df.T
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -315,7 +313,7 @@ class Processors:
         df = df.iloc[:, 1:]
         df = df.T
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -328,7 +326,7 @@ class Processors:
 
     def ccle_exonusage_filtered(raw_path=None):
 
-        ccle_exonusage = pd.read_hdf(f"{PROCESSED_DIR}/ccle_exonusage.h5")
+        ccle_exonusage = Datasets.load("ccle_exonusage")
 
         MIN_VALID_COUNT = 100
 
@@ -353,7 +351,7 @@ class Processors:
         df = df.T
         df = df.astype(np.float16)
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -373,7 +371,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -393,7 +391,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -419,7 +417,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -443,7 +441,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -497,7 +495,7 @@ class Processors:
 
         df = df.T
 
-        ccle_annotations = pd.read_hdf(f"{PROCESSED_DIR}/ccle_annotations.h5")
+        ccle_annotations = Datasets.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -540,7 +538,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        depmap_annotations = pd.read_hdf(f"{PROCESSED_DIR}/depmap_annotations.h5")
+        depmap_annotations = Datasets.load("depmap_annotations")
         ccle_to_depmap = dict(
             zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
         )
@@ -560,7 +558,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        depmap_annotations = pd.read_hdf(f"{PROCESSED_DIR}/depmap_annotations.h5")
+        depmap_annotations = Datasets.load("depmap_annotations")
         ccle_to_depmap = dict(
             zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
         )
@@ -609,7 +607,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        prism_primary_info = pd.read_hdf(f"{PROCESSED_DIR}/prism_primary_info.h5")
+        prism_primary_info = Datasets.load("prism_primary_info")
         primary_name_map = dict(
             zip(prism_primary_info["column_name"], prism_primary_info["format_name"])
         )
@@ -633,7 +631,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        prism_secondary_info = pd.read_hdf(f"{PROCESSED_DIR}/prism_secondary_info.h5")
+        prism_secondary_info = Datasets.load("prism_secondary_info")
         primary_name_map = dict(
             zip(
                 prism_secondary_info["column_name"], prism_secondary_info["format_name"]
