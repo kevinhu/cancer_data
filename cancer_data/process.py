@@ -2,6 +2,7 @@ from config import DOWNLOAD_DIR, PROCESSED_DIR, SCHEMA
 
 import os
 
+import math
 import numpy as np
 import pandas as pd
 
@@ -14,7 +15,7 @@ from collections import defaultdict
 
 def check_dependencies(dependencies):
 
-    if dependencies is None or np.isnan(dependencies):
+    if dependencies is None or dependencies!=dependencies:
         return
 
     for d in dependencies.split(","):
@@ -386,7 +387,27 @@ class Processors:
         ccle_to_depmap = dict(
             zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
         )
-        
+
+        df.columns = map(ccle_to_depmap.get, df.columns)
+        df.index = df.index.map(parentheses_to_snake)
+
+        df.columns = df.columns.astype(str)
+        df.index = df.index.astype(str)
+
+        df = df.T
+        df = df.astype(np.float16)
+
+        export_hdf(output_id, df)
+
+    def achilles(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        depmap_annotations = pd.read_hdf(f"{PROCESSED_DIR}/depmap_annotations.h5")
+        ccle_to_depmap = dict(
+            zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
+        )
+
         df.columns = map(ccle_to_depmap.get, df.columns)
         df.index = df.index.map(parentheses_to_snake)
 
