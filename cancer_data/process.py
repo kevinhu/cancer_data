@@ -24,6 +24,11 @@ def check_dependencies(dependencies):
         assert file_exists(d_file), f"Dependency {d} does not exist."
 
 
+def parentheses_to_snake(x):
+    x_split = x.split(" (")
+    return f"{x_split[0]}_{x_split[1][:-1]}"
+
+
 class Processors:
     def __init__(self):
         return
@@ -360,6 +365,16 @@ class Processors:
         )
 
         df = df.astype(str)
+
+        export_hdf(output_id, df)
+
+    def avana(raw_path, output_id):
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        df.columns = map(parentheses_to_snake, df.columns)
+
+        df = df.astype(np.float16)
 
         export_hdf(output_id, df)
 
