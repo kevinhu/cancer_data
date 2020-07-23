@@ -15,6 +15,7 @@ import tempfile
 import re
 
 from functools import reduce
+from collections import Counter
 
 
 def concat_cols(df, cols, delim):
@@ -104,7 +105,7 @@ class Processors:
 
         return df
 
-    def gtex_manifest(raw_path=None):
+    def gtex_manifest():
 
         gtex_manifest_1 = Datasets.load("gtex_2919_manifest")
         gtex_manifest_2 = Datasets.load("gtex_5214_manifest")
@@ -312,7 +313,7 @@ class Processors:
 
         return df
 
-    def ccle_exonusage_filtered(raw_path=None):
+    def ccle_exonusage_filtered():
 
         ccle_exonusage = Datasets.load("ccle_exonusage")
 
@@ -582,6 +583,62 @@ class Processors:
 
         return df
 
+    def depmap_damaging():
+
+        MIN_COUNT_CUTOFF = 4
+
+        df = Datasets.load("depmap_mutations")
+
+        df = df[df["Variant_annotation"] == "damaging"]
+
+        # exclude rarely damaged genes
+        mut_counts = Counter(df["Hugo_Symbol"])
+        df["count"] = df["Hugo_Symbol"].apply(mut_counts.get)
+        df = df[df["count"] >= MIN_COUNT_CUTOFF]
+
+        # remove damaged duplicates
+        df["id"] = df["Hugo_Symbol"] + "_" + df["DepMap_ID"]
+        df = df.drop_duplicates(subset=["id"], keep="first")
+
+        # dummy value for pivot table
+        df["value"] = 1
+
+        mut_mat = pd.pivot_table(
+            df, values="value", index=["DepMap_ID"], columns="Hugo_Symbol", fill_value=0
+        )
+
+        mut_mat = mut_mat.astype(bool)
+
+        return mut_mat
+
+    def depmap_hotspot():
+
+        MIN_COUNT_CUTOFF = 4
+
+        df = Datasets.load("depmap_mutations")
+
+        df = df[(df["isCOSMIChotspot"]==True)|(df["isTCGAhotspot"]==True)]
+
+        # exclude rarely damaged genes
+        mut_counts = Counter(df["Hugo_Symbol"])
+        df["count"] = df["Hugo_Symbol"].apply(mut_counts.get)
+        df = df[df["count"] >= MIN_COUNT_CUTOFF]
+
+        # remove damaged duplicates
+        df["id"] = df["Hugo_Symbol"] + "_" + df["DepMap_ID"]
+        df = df.drop_duplicates(subset=["id"], keep="first")
+
+        # dummy value for pivot table
+        df["value"] = 1
+
+        mut_mat = pd.pivot_table(
+            df, values="value", index=["DepMap_ID"], columns="Hugo_Symbol", fill_value=0
+        )
+
+        mut_mat = mut_mat.astype(bool)
+
+        return mut_mat
+
     def prism_primary_info(raw_path):
 
         df = pd.read_csv(raw_path)
@@ -801,11 +858,13 @@ def process(dataset_id, downloaded_name, dependencies, dataset_type):
                     f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
                 )
 
+
 def process_all():
 
     for _, file in SCHEMA.iterrows():
 
         process(file["id"], file["downloaded_name"], file["dependencies"], file["type"])
+
 
 if __name__ == "__main__":
 
