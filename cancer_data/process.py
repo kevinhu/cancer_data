@@ -512,6 +512,58 @@ class Processors:
 
         export_hdf(output_id, df)
 
+    def tcga_annotations(raw_path, output_id):
+
+        TCGA_MAP = {
+            "acute myeloid leukemia": "LAML",
+            "adrenocortical cancer": "ACC",
+            "bladder urothelial carcinoma": "BLCA",
+            "brain lower grade glioma": "LGG",
+            "breast invasive carcinoma": "BRCA",
+            "cervical & endocervical cancer": "CESC",
+            "cholangiocarcinoma": "CHOL",
+            "colon adenocarcinoma": "COAD",
+            "diffuse large B-cell lymphoma": "DLBC",
+            "esophageal carcinoma": "ESCA",
+            "glioblastoma multiforme": "GBM",
+            "head & neck squamous cell carcinoma": "HNSC",
+            "kidney chromophobe": "KICH",
+            "kidney clear cell carcinoma": "KIRC",
+            "kidney papillary cell carcinoma": "KIRP",
+            "liver hepatocellular carcinoma": "LIHC",
+            "lung adenocarcinoma": "LUAD",
+            "lung squamous cell carcinoma": "LUSC",
+            "mesothelioma": "MESO",
+            "ovarian serous cystadenocarcinoma": "OV",
+            "pancreatic adenocarcinoma": "PAAD",
+            "pheochromocytoma & paraganglioma": "PCPG",
+            "prostate adenocarcinoma": "PRAD",
+            "rectum adenocarcinoma": "READ",
+            "sarcoma": "SARC",
+            "skin cutaneous melanoma": "SKCM",
+            "stomach adenocarcinoma": "STAD",
+            "testicular germ cell tumor": "TGCT",
+            "thymoma": "THYM",
+            "thyroid carcinoma": "THCA",
+            "uterine carcinosarcoma": "UCS",
+            "uterine corpus endometrioid carcinoma": "UCEC",
+            "uveal melanoma": "UVM",
+        }
+
+        df = pd.read_csv(raw_path, sep="\t", index_col=0)
+
+        df["abbreviated_disease"] = df["_primary_disease"].apply(lambda x: TCGA_MAP[x])
+
+        str_cols = ["sample_type", "_primary_disease", "abbreviated_disease"]
+
+        for col in str_cols:
+
+            df[col] = df[col].astype(str)
+
+        df.index = df.index.astype(str)
+
+        export_hdf(output_id, df)
+
 
 if __name__ == "__main__":
 
