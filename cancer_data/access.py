@@ -5,14 +5,14 @@ import pandas as pd
 
 class Datasets:
 
-	def load(dataset_id):
+	def load(dataset_id, **kwargs):
 
 		dataset_path = PROCESSED_DIR / f"{dataset_id}.h5"
 
 		assert dataset_id in SCHEMA.index, f"{dataset_id} not in schema!"
 		assert file_exists(dataset_path), f"{dataset_id} does not exist!"
 
-		df = pd.read_hdf(dataset_path)
+		df = pd.read_hdf(dataset_path, **kwargs)
 
 		return df
 

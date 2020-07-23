@@ -87,7 +87,7 @@ def generate_preview(output_id):
 
     PREVIEW_LEN = 10
 
-    df = pd.read_hdf(f"{PROCESSED_DIR}/{output_id}.h5", stop=PREVIEW_LEN)
+    df = Datasets.load(output_id, stop=PREVIEW_LEN)
 
     df.to_csv(f"{PREVIEW_DIR}/{output_id}.txt", sep="\t")
 
