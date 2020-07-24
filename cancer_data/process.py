@@ -67,6 +67,52 @@ def gtex_splicing(raw_path):
     return df
 
 
+def tcga_splicing(raw_path):
+
+    chunk_iterator = pd.read_csv(raw_path, sep="\t", chunksize=1000)
+
+    merged = []
+
+    for chunk in chunk_iterator:
+
+        chunk["exon_id"] = concat_cols(
+            chunk,
+            [
+                "gene_name",
+                "event_type",
+                "event_chr",
+                "event_coordinates",
+                "alt_region_coordinates",
+            ],
+            "_",
+        )
+
+        chunk = chunk.drop(
+            [
+                "event_id",
+                "event_type",
+                "event_chr",
+                "event_coordinates",
+                "alt_region_coordinates",
+                "gene_name",
+            ],
+            axis=1,
+        )
+
+        chunk = chunk.set_index("exon_id")
+        chunk = chunk.astype(np.float16)
+
+        merged.append(chunk)
+
+    merged = pd.concat(merged, axis=0)
+    merged = merged.T
+
+    # remove prefix identifiers from names
+    merged.index = merged.index.map(lambda x: x.split(".")[0])
+
+    return merged
+
+
 def parentheses_to_snake(x):
     x_split = x.split(" (")
     return f"{x_split[0]}_{x_split[1][:-1]}"
@@ -617,7 +663,7 @@ class Processors:
 
         df = Datasets.load("depmap_mutations")
 
-        df = df[(df["isCOSMIChotspot"]==True)|(df["isTCGAhotspot"]==True)]
+        df = df[(df["isCOSMIChotspot"] == True) | (df["isTCGAhotspot"] == True)]
 
         # exclude rarely damaged genes
         mut_counts = Counter(df["Hugo_Symbol"])
@@ -806,6 +852,26 @@ class Processors:
         df = df.astype(np.float16)
 
         return df
+
+    def tcga_a3ss(raw_path):
+
+        return tcga_splicing(raw_path)
+
+    def tcga_a5ss(raw_path):
+
+        return tcga_splicing(raw_path)
+
+    def tcga_se(raw_path):
+
+        return tcga_splicing(raw_path)
+
+    def tcga_ir(raw_path):
+
+        return tcga_splicing(raw_path)
+
+    def tcga_mx(raw_path):
+
+        return tcga_splicing(raw_path)
 
 
 def check_dependencies(dependencies):
