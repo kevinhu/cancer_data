@@ -67,6 +67,19 @@ def gtex_splicing(raw_path):
     return df
 
 
+def gtex_splicing_filtered(df):
+
+    MIN_VALID_COUNT = 100
+
+    nan_counts = df.isna().sum(axis=0)
+
+    keep_cols = df.columns[nan_counts < len(df) - MIN_VALID_COUNT]
+
+    df = df[keep_cols]
+
+    return df
+
+
 def tcga_splicing(raw_path):
 
     chunk_iterator = pd.read_csv(raw_path, sep="\t", chunksize=1000)
@@ -183,7 +196,7 @@ class Processors:
 
         return gtex_splicing(raw_path)
 
-    def gtex_es(raw_path):
+    def gtex_se(raw_path):
 
         return gtex_splicing(raw_path)
 
@@ -194,6 +207,36 @@ class Processors:
     def gtex_mx(raw_path):
 
         return gtex_splicing(raw_path)
+
+    def gtex_a3ss_filtered():
+
+        df = Datasets.load("gtex_a3ss")
+
+        return gtex_splicing_filtered(df)
+
+    def gtex_a5ss_filtered():
+
+        df = Datasets.load("gtex_a5ss")
+
+        return gtex_splicing_filtered(df)
+
+    def gtex_se_filtered():
+
+        df = Datasets.load("gtex_se")
+
+        return gtex_splicing_filtered(df)
+
+    def gtex_ir_filtered():
+
+        df = Datasets.load("gtex_ir")
+
+        return gtex_splicing_filtered(df)
+
+    def gtex_mx_filtered():
+
+        df = Datasets.load("gtex_mx")
+
+        return gtex_splicing_filtered(df)
 
     def ccle_annotations(raw_path):
 
@@ -361,9 +404,9 @@ class Processors:
 
     def ccle_exonusage_filtered():
 
-        ccle_exonusage = Datasets.load("ccle_exonusage")
-
         MIN_VALID_COUNT = 100
+
+        ccle_exonusage = Datasets.load("ccle_exonusage")
 
         exonusage_nans = ccle_exonusage.isna().sum(axis=0)
 
