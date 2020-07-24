@@ -4,7 +4,7 @@ This package provides that handle the downloading and processing of several publ
 
 ## Datasets
 
-A complete description of the datasets may be found in the [schema](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.txt).
+A complete description of the datasets may be found in [schema.txt](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.txt).
 
 | Collection                                    | Datasets                                                     | Portal                                                       |
 | --------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -18,5 +18,20 @@ A complete description of the datasets may be found in the [schema](https://gith
 The goal of this package is to make statistical analysis and coordination of these datasets easier. To that end, it provides the following features:
 
 1. Harmonization: datasets within a collection have sample IDs reduced to the same format. For instance, all CCLE+DepMap datasets have been modified to use Achilles/Arxspan IDs, rather than cell line names.
-2. Speed: processed datasets are all stored in high-performance [HDF5 format](https://en.wikipedia.org/wiki/Hierarchical_Data_Format), allowing large tables to be loaded magnitudes faster than in raw CSV or TSV formats.
-3. Space: when possible, tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format.
+2. Speed: processed datasets are all stored in high-performance [HDF5 format](https://en.wikipedia.org/wiki/Hierarchical_Data_Format), allowing large tables to be loaded magnitudes faster than with CSV or TSV formats.
+3. Space: tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format.
+
+## How it works
+
+The [schema](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.txt) serves as the reference point for all datasets used. Each dataset is identified by a unique `id` column, which also serves as its access identifier.
+
+Datasets are downloaded from the location specified in `download_url`, after which they are checked against the provided `downloaded_md5` hash.
+
+The next steps depend on the `type` of the dataset:
+
+- `reference` datasets, such as the hg19 FASTA files, are left as-is.
+- `primary_dataset` objects are preprocessed and converted into HDF5 format.
+- `secondary_dataset` objects are defined as being made from `primary_dataset` objects. These are also processed and converted into HDF5 format.
+
+To keep track of which datasets are necessary for producing another, the `dependencies` column specifies the dataset `id`s that are required for making another. For instance, the `ccle_proteomics` dataset, which has a `type` of `primary_dataset`, is dependent on the `ccle_annotations` dataset for converting cell line names to Achilles IDs. When running the processing pipeline, the script will automatically check for the presence of dependencies, and raise an error if they are not found.
+
