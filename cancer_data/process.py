@@ -64,11 +64,6 @@ def gtex_splicing(raw_path):
     df = df.T
     df = df.astype(np.float16)
 
-    return df
-
-
-def gtex_splicing_filtered(df):
-
     MIN_VALID_COUNT = 100
 
     nan_counts = df.isna().sum(axis=0)
@@ -207,36 +202,6 @@ class Processors:
     def gtex_mx(raw_path):
 
         return gtex_splicing(raw_path)
-
-    def gtex_a3ss_filtered():
-
-        df = Datasets.load("gtex_a3ss")
-
-        return gtex_splicing_filtered(df)
-
-    def gtex_a5ss_filtered():
-
-        df = Datasets.load("gtex_a5ss")
-
-        return gtex_splicing_filtered(df)
-
-    def gtex_se_filtered():
-
-        df = Datasets.load("gtex_se")
-
-        return gtex_splicing_filtered(df)
-
-    def gtex_ir_filtered():
-
-        df = Datasets.load("gtex_ir")
-
-        return gtex_splicing_filtered(df)
-
-    def gtex_mx_filtered():
-
-        df = Datasets.load("gtex_mx")
-
-        return gtex_splicing_filtered(df)
 
     def ccle_annotations(raw_path):
 
