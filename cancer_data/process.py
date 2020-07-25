@@ -109,16 +109,36 @@ def tcga_splicing(raw_path):
 
         chunk = chunk.set_index("exon_id")
         chunk = chunk.astype(np.float16)
+        chunk = chunk.T
+
+        MIN_VALID_COUNT = 500
+
+        nan_counts = chunk.isna().sum(axis=0)
+
+        keep_cols = chunk.columns[nan_counts < len(chunk) - MIN_VALID_COUNT]
+
+        chunk = chunk.filter(keep_cols, axis=1)
 
         merged.append(chunk)
 
-    merged = pd.concat(merged, axis=0)
-    merged = merged.T
+    merged = pd.concat(merged, axis=1)
 
     # remove prefix identifiers from names
     merged.index = merged.index.map(lambda x: x.split(".")[0])
 
     return merged
+
+def tcga_splicing_filtered(df):
+
+    MIN_VALID_COUNT = 500
+
+    nan_counts = df.isna().sum(axis=0)
+
+    keep_cols = df.columns[nan_counts < len(df) - MIN_VALID_COUNT]
+
+    df = df.filter(keep_cols, axis=1)
+
+    return df
 
 
 def parentheses_to_snake(x):
