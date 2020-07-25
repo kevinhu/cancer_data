@@ -128,6 +128,7 @@ def tcga_splicing(raw_path):
 
     return merged
 
+
 def tcga_splicing_filtered(df):
 
     MIN_VALID_COUNT = 500
@@ -383,25 +384,17 @@ class Processors:
 
         df.index = df.index.map(ccle_to_depmap.get)
 
+        MIN_VALID_COUNT = 100
+
+        exonusage_nans = df.isna().sum(axis=0)
+
+        keep_cols = df.columns[exonusage_nans < len(df) - MIN_VALID_COUNT]
+
+        df = df[keep_cols]
+
         df = df.astype(np.float16)
 
         return df
-
-    def ccle_exonusage_filtered():
-
-        MIN_VALID_COUNT = 100
-
-        ccle_exonusage = Datasets.load("ccle_exonusage")
-
-        exonusage_nans = ccle_exonusage.isna().sum(axis=0)
-
-        keep_cols = ccle_exonusage.columns[
-            exonusage_nans < len(ccle_exonusage) - MIN_VALID_COUNT
-        ]
-
-        ccle_exonusage = ccle_exonusage[keep_cols]
-
-        return ccle_exonusage
 
     def ccle_mirna(raw_path):
 
