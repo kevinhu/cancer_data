@@ -6,7 +6,6 @@ authors = ["Kevin Hu <kevinhuwest@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-numpy = "^1.19.0"
 pandas = "^1.0.5"
 matplotlib = "^3.3.0"
 gtfparse = "^1.2.0"

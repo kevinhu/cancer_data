@@ -8,7 +8,7 @@ from hashlib import md5
 from pathlib import Path
 
 import pandas as pd
-from config import PROCESSED_DIR
+from .config import PROCESSED_DIR
 
 
 class bcolors:
@@ -21,8 +21,49 @@ class bcolors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
+
 def file_exists(file_path):
     return Path(file_path).is_file()
+
+
+def concat_cols(df, cols, delim):
+    """
+
+    Concatenate columns in a dataframe with a
+    delimiter.
+
+    Args:
+        df (DataFrame): input DataFrame
+        cols (list-like): columns to concatenate
+        delimiter (str): delimiter to join column values
+
+    Returns:
+        Series with concatenated columns.
+
+    """
+
+    cols_str = [df[x].astype(str) for x in cols]
+
+    return reduce(lambda a, b: a + delim + b, cols_str)
+
+
+def parentheses_to_snake(x):
+    """
+
+    Convert a string formatted as
+    "{a} ({b})" to "{a}_{b}"
+
+    Args:
+        x: input string
+
+    Returns:
+        Formatted string
+
+    """
+
+    x_split = x.split(" (")
+    return f"{x_split[0]}_{x_split[1][:-1]}"
+
 
 def export_hdf(output_id, df):
 
