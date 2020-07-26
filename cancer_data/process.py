@@ -1,30 +1,55 @@
-from config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
-from access import Datasets
-
-import numpy as np
-import pandas as pd
-
-from utils import bcolors, file_exists, export_hdf
-
-from gtfparse import read_gtf
-
-from collections import defaultdict
-
 import gzip
 import tempfile
 import re
 
 from functools import reduce
-from collections import Counter
+from collections import Counter, defaultdict
+
+import numpy as np
+import pandas as pd
+
+from gtfparse import read_gtf
+
+from config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
+from access import Datasets
+from utils import bcolors, file_exists, export_hdf
 
 
 def concat_cols(df, cols, delim):
+    """
+
+    Concatenate columns in a dataframe with a
+    delimiter.
+
+    Args:
+        df (DataFrame): input DataFrame
+        cols (list-like): columns to concatenate
+        delimiter (str): delimiter to join column values
+
+    Returns:
+        Series with concatenated columns.
+
+    """
+
     cols_str = [df[x].astype(str) for x in cols]
 
     return reduce(lambda a, b: a + delim + b, cols_str)
 
 
 def gtex_splicing(raw_path):
+    """
+
+    General handler for all GTEx splicing files.
+
+    Args:
+        raw_path (str): the complete path to the
+                        raw downloaded file
+
+    Returns:
+        Processed DataFrame
+
+    """
+
 
     df = pd.read_csv(raw_path, sep="\t")
 
@@ -76,6 +101,18 @@ def gtex_splicing(raw_path):
 
 
 def tcga_splicing(raw_path):
+    """
+
+    General handler for all TCGA splicing files.
+
+    Args:
+        raw_path (str): the complete path to the
+                        raw downloaded file
+
+    Returns:
+        Processed DataFrame
+
+    """
 
     chunk_iterator = pd.read_csv(raw_path, sep="\t", chunksize=1000)
 
@@ -129,31 +166,40 @@ def tcga_splicing(raw_path):
     return merged
 
 
-def tcga_splicing_filtered(df):
-
-    MIN_VALID_COUNT = 500
-
-    nan_counts = df.isna().sum(axis=0)
-
-    keep_cols = df.columns[nan_counts < len(df) - MIN_VALID_COUNT]
-
-    df = df.filter(keep_cols, axis=1)
-
-    return df
-
-
 def parentheses_to_snake(x):
+    """
+
+    Convert a string formatted as 
+    "{a} ({b})" to "{a}_{b}"
+
+    Args:
+        x: input string
+
+    Returns:
+        Formatted string
+
+    """
+
     x_split = x.split(" (")
     return f"{x_split[0]}_{x_split[1][:-1]}"
 
 
-def generate_preview(output_id):
+def generate_preview(dataset_id):
+    """
+
+    Generate a preview of a DataFrame, saving
+    to a CSV
+
+    Args:
+        dataset_id: the ID of the dataset
+
+    """
 
     PREVIEW_LEN = 10
 
-    df = Datasets.load(output_id, stop=PREVIEW_LEN)
+    df = Datasets.load(dataset_id, stop=PREVIEW_LEN)
 
-    df.to_csv(f"{PREVIEW_DIR}/{output_id}.txt", sep="\t")
+    df.to_csv(f"{PREVIEW_DIR}/{dataset_id}.txt", sep="\t")
 
 
 class Processors:
@@ -161,26 +207,86 @@ class Processors:
         return
 
     def g19_7_definitions(raw_path):
+        """
+
+        Process GENCODE g19 v7 gene+transcript definitions.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
         df = read_gtf(raw_path)
 
         return df
 
     def ensembl_75_definitions(raw_path):
+        """
+
+        Process ENSEMBL v75 gene_transcript definitions.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
         df = read_gtf(raw_path)
 
         return df
 
     def gtex_2919_manifest(raw_path):
+        """
+
+        Process the GTEx 2919 manifest.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
         df = pd.read_csv(raw_path, sep="\t")
 
         return df
 
     def gtex_5214_manifest(raw_path):
+        """
+
+        Process the GTEx 5214 manifest.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
         df = pd.read_csv(raw_path, sep="\t")
 
         return df
 
     def gtex_manifest():
+        """
+
+        Process the merged manifest.
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         gtex_manifest_1 = Datasets.load("gtex_2919_manifest")
         gtex_manifest_2 = Datasets.load("gtex_5214_manifest")
@@ -192,6 +298,14 @@ class Processors:
         return gtex_manifest
 
     def gtex_gene_tpm(raw_path):
+        """
+
+        Process the merged manifest.
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, skiprows=2, index_col=0, sep="\t")
 
@@ -205,26 +319,98 @@ class Processors:
         return df
 
     def gtex_a3ss(raw_path):
+        """
+
+        Process GTEx A3SS splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return gtex_splicing(raw_path)
 
     def gtex_a5ss(raw_path):
+        """
+
+        Process GTEx A5SS splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return gtex_splicing(raw_path)
 
     def gtex_se(raw_path):
+        """
+
+        Process GTEx SE splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return gtex_splicing(raw_path)
 
     def gtex_ir(raw_path):
+        """
+
+        Process GTEx IR splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return gtex_splicing(raw_path)
 
     def gtex_mx(raw_path):
+        """
+
+        Process GTEx MX splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return gtex_splicing(raw_path)
 
     def ccle_annotations(raw_path):
+        """
+
+        Process CCLE cell line annotations.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t")
         df = df.astype(str)
@@ -232,6 +418,18 @@ class Processors:
         return df
 
     def ccle_translocations_svaba(raw_path):
+        """
+
+        Process CCLE SvABA calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_excel(raw_path)
 
@@ -261,6 +459,18 @@ class Processors:
         return df
 
     def ccle_rppa_info(raw_path):
+        """
+
+        Process CCLE RPPA antibody info.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path)
         df = df.astype(str)
@@ -274,6 +484,18 @@ class Processors:
         return df
 
     def ccle_rppa(raw_path):
+        """
+
+        Process CCLE RPPA values.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -293,6 +515,18 @@ class Processors:
         return df
 
     def ccle_gene_tpm(raw_path):
+        """
+
+        Process CCLE gene TPM measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:, 1:]
@@ -322,6 +556,18 @@ class Processors:
         return df
 
     def ccle_transcript_tpm(raw_path):
+        """
+
+        Process CCLE transcript TPM measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t")
 
@@ -352,7 +598,33 @@ class Processors:
         return df
 
     def ccle_exonusage(raw_path):
+        """
+
+        Process CCLE splicing measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
         def reorder_exon(exon):
+            """
+
+            Helper function for formatting exon
+            splicing IDs.
+
+            Args:
+                exon (str): exon identifier
+
+            Returns:
+                Processed DataFrame
+
+            """
+
             exon_split = exon.split("_")
             return "_".join(exon_split[3:]) + "_" + "_".join(exon_split[:3])
 
@@ -397,6 +669,18 @@ class Processors:
         return df
 
     def ccle_mirna(raw_path):
+        """
+
+        Process CCLE miRNA measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", skiprows=2)
 
@@ -417,6 +701,18 @@ class Processors:
         return df
 
     def ccle_rrbs_tss1kb(raw_path):
+        """
+
+        Process CCLE RRBS TSS 1kb measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:-1, 2:]
@@ -437,6 +733,18 @@ class Processors:
         return df
 
     def ccle_rrbs_tss_clusters(raw_path):
+        """
+
+        Process CCLE RRBS TSS cluster measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:-1, 2:]
@@ -457,6 +765,18 @@ class Processors:
         return df
 
     def ccle_rrbs_cgi_clusters(raw_path):
+        """
+
+        Process CCLE RRBS CGI cluster measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:-1]
@@ -483,6 +803,18 @@ class Processors:
         return df
 
     def ccle_rrbs_enhancer_clusters(raw_path):
+        """
+
+        Process CCLE RRBS enhancer cluster measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
 
@@ -507,6 +839,18 @@ class Processors:
         return df
 
     def ccle_tertp(raw_path):
+        """
+
+        Process CCLE TERT promoter calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_excel(raw_path, skiprows=4)
 
@@ -516,6 +860,18 @@ class Processors:
         return df
 
     def ccle_msi(raw_path):
+        """
+
+        Process CCLE MSI calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_excel(raw_path, sheet_name="MSI calls")
 
@@ -530,6 +886,18 @@ class Processors:
         return df
 
     def ccle_metabolomics(raw_path):
+        """
+
+        Process CCLE metabolomics measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path)
 
@@ -543,6 +911,18 @@ class Processors:
         return df
 
     def ccle_proteomics(raw_path):
+        """
+
+        Process CCLE proteomics measurements.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path)
         df.index = df["Gene_Symbol"].fillna("UNNAMED") + "_" + df["Uniprot_Acc"]
@@ -566,6 +946,18 @@ class Processors:
         return df
 
     def depmap_annotations(raw_path):
+        """
+
+        Process DepMap cell line annotations.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -581,6 +973,18 @@ class Processors:
         return df
 
     def avana(raw_path):
+        """
+
+        Process DepMap Avana sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -591,6 +995,18 @@ class Processors:
         return df
 
     def drive(raw_path):
+        """
+
+        Process DepMap DRIVE sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -611,6 +1027,18 @@ class Processors:
         return df
 
     def achilles(raw_path):
+        """
+
+        Process DepMap Achilles sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -631,6 +1059,18 @@ class Processors:
         return df
 
     def depmap_gene_tpm(raw_path):
+        """
+
+        Process DepMap gene TPM estimates.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
         df.columns = map(parentheses_to_snake, df.columns)
@@ -640,6 +1080,18 @@ class Processors:
         return df
 
     def depmap_mutations(raw_path):
+        """
+
+        Process DepMap mutation calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t")
 
@@ -651,6 +1103,15 @@ class Processors:
         return df
 
     def depmap_damaging():
+        """
+
+        Construct binary mutation matrix for 
+        DepMap damaging mutations.
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         MIN_COUNT_CUTOFF = 4
 
@@ -679,6 +1140,15 @@ class Processors:
         return mut_mat
 
     def depmap_hotspot():
+        """
+
+        Construct binary mutation matrix for 
+        DepMap hotspot mutations.
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         MIN_COUNT_CUTOFF = 4
 
@@ -707,6 +1177,18 @@ class Processors:
         return mut_mat
 
     def prism_primary_info(raw_path):
+        """
+
+        Process PRISM primary screen drug metadata.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path)
 
@@ -716,6 +1198,18 @@ class Processors:
         return df
 
     def prism_primary_logfold(raw_path):
+        """
+
+        Process PRISM primary screen sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -731,6 +1225,18 @@ class Processors:
         return df
 
     def prism_secondary_info(raw_path):
+        """
+
+        Process PRISM secondary screen drug metadata.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path)
 
@@ -740,6 +1246,18 @@ class Processors:
         return df
 
     def prism_secondary_logfold(raw_path):
+        """
+
+        Process PRISM secondary screen sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
 
@@ -757,6 +1275,18 @@ class Processors:
         return df
 
     def depmap_copy_number(raw_path):
+        """
+
+        Process DepMap copy number estimates.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, index_col=0)
         df.columns = map(parentheses_to_snake, df.columns)
@@ -766,6 +1296,18 @@ class Processors:
         return df
 
     def tcga_annotations(raw_path):
+        """
+
+        Process TCGA sample annotations.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         TCGA_MAP = {
             "acute myeloid leukemia": "LAML",
@@ -818,6 +1360,18 @@ class Processors:
         return df
 
     def tcga_mutations(raw_path):
+        """
+
+        Process TCGA MC3 mutation calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t")
 
@@ -830,6 +1384,18 @@ class Processors:
         return df
 
     def tcga_msi(raw_path):
+        """
+
+        Process TCGA MSI calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_excel(raw_path)
         df = df[df["Case ID"].apply(lambda x: x[:4] == "TCGA")]
@@ -840,6 +1406,18 @@ class Processors:
         return df
 
     def tcga_cn_continuous(raw_path):
+        """
+
+        Process TCGA continuous copy number calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.T
@@ -848,6 +1426,18 @@ class Processors:
         return df
 
     def tcga_cn_thresholded(raw_path):
+        """
+
+        Process TCGA discrete (thresholded) copy number calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.T
@@ -856,6 +1446,18 @@ class Processors:
         return df
 
     def tcga_cn_whitelisted(raw_path):
+        """
+
+        Process TCGA whitelisted copy number calls.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.T
@@ -864,6 +1466,19 @@ class Processors:
         return df
 
     def tcga_normalized_gene_expression(raw_path):
+        """
+
+        Process TCGA batch effects-normalized gene expression
+        estimates.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
 
@@ -875,27 +1490,95 @@ class Processors:
         return df
 
     def tcga_a3ss(raw_path):
+        """
+
+        Process TCGA A3SS splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return tcga_splicing(raw_path)
 
     def tcga_a5ss(raw_path):
+        """
+
+        Process TCGA A5SS splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return tcga_splicing(raw_path)
 
     def tcga_se(raw_path):
+        """
+
+        Process TCGA SE splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return tcga_splicing(raw_path)
 
     def tcga_ir(raw_path):
+        """
+
+        Process TCGA IR splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return tcga_splicing(raw_path)
 
     def tcga_mx(raw_path):
+        """
+
+        Process TCGA MX splicing events.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
 
         return tcga_splicing(raw_path)
 
 
 def check_dependencies(dependencies):
+    """
+
+    Check if dataset dependencies are all met.
+
+    Args:
+        dependencies (str or NaN): comma-delimited depenencies
+
+    """
 
     if dependencies is None or dependencies != dependencies:
         return
@@ -908,6 +1591,17 @@ def check_dependencies(dependencies):
 
 
 def process(dataset_id, downloaded_name, dependencies, dataset_type):
+    """
+
+    Handler for processing a dataset
+
+    Args:
+        dataset_id (str): ID of the dataset
+        downloaded_name (str): name of the raw downloaded dataset file
+        dependencies (str): dependencies of the dataset
+        dataset_type (str): type of the dataset
+
+    """
 
     if dataset_type in ["primary_dataset", "secondary_dataset"]:
 
@@ -947,6 +1641,12 @@ def process(dataset_id, downloaded_name, dependencies, dataset_type):
 
 
 def process_all():
+    """
+
+    Process all datasets in the schema.
+    
+
+    """
 
     for _, file in SCHEMA.iterrows():
 
