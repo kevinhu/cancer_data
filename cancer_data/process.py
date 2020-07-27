@@ -1,6 +1,11 @@
+import os
+import warnings
+
 from . import access
 from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 from .utils import bcolors, file_exists, export_hdf
+
+from .download import download
 
 from .processors import ccle, depmap, gtex, other, tcga
 
@@ -62,13 +67,80 @@ def generate_preview(dataset_id):
     df.to_csv(f"{PREVIEW_DIR}/{dataset_id}.txt", sep="\t")
 
 
-def process(dataset_id, overwrite=False):
+def remove_raw(dataset_id):
+    """
+
+    Remove the raw dataset file.
+
+    Args:
+        dataset_id: ID of dataset to remove
+
+    """
+
+    id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
+
+    assert dataset_id in SCHEMA.index, f"{id_bold} is not in the schema."
+
+    dataset_row = SCHEMA.loc[dataset_id]
+    downloaded_name = dataset_row["downloaded_name"]
+
+    raw_file = f"{DOWNLOAD_DIR}/{downloaded_name}"
+
+    if file_exists(raw_file):
+        os.remove(raw_file)
+    else:
+        warnings.warn(f"{id_bold} is in schema, but raw file does not exist.")
+
+
+def remove_processed(dataset_id):
+    """
+
+    Remove the processed dataset file.
+
+    Args:
+        dataset_id: ID of dataset to remove
+
+    """
+
+    id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
+
+    assert dataset_id in SCHEMA.index, f"{id_bold} is not in the schema."
+
+    processed_file = f"{PROCESSED_DIR}/{dataset_id}.h5"
+
+    if file_exists(processed_file):
+        os.remove(processed_file)
+
+        print("")
+    else:
+        warnings.warn(f"{id_bold} is in schema, but processed file does not exist.")
+
+
+def remove(dataset_id):
+    """
+
+    Remove the raw and processed dataset files.
+
+    Args:
+        dataset_id: ID of dataset to remove
+
+    """
+
+    assert dataset_id in SCHEMA.index, f"{dataset_id} is not in the schema."
+
+    remove_raw(dataset_id)
+    remove_processed(dataset_id)
+
+
+def process(dataset_id, overwrite=False, delete_raw=False):
     """
 
     Handler for processing a dataset.
 
     Args:
         dataset_id (str): ID of the dataset
+        overwrite (bool): overwrite existing
+        remove_raw (bool): remove the raw file
 
     """
 
@@ -90,6 +162,8 @@ def process(dataset_id, overwrite=False):
 
             print(f"{id_bold} already processed, skipping")
 
+            return
+
         else:
 
             handler = getattr(Processors, dataset_id, None)
@@ -110,11 +184,49 @@ def process(dataset_id, overwrite=False):
 
                 generate_preview(dataset_id)
 
+                if delete_raw:
+
+                    remove_raw(dataset_id)
+
             else:
 
                 print(
                     f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
                 )
+
+                return
+
+
+def download_and_process(dataset_id, download_kwargs={}, process_kwargs={}):
+    """
+
+    Download and process a dataset.
+
+    Args:
+        dataset_id (str): ID of the dataset
+        download_kwargs (dict): arguments to pass to download()
+        process_kwargs (dict): arguments to pass to process()
+
+    """
+
+    id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
+
+    assert dataset_id in SCHEMA.index, f"{id_bold} is not in the schema."
+
+    download(dataset_id, **download_kwargs)
+    process(dataset_id, **process_kwargs)
+
+
+def download_and_process_all(dataset_id, download_kwargs={}, process_kwargs={}):
+    """
+
+    Download and process all datasets in the schema.
+
+    """
+
+    for _, dataset in SCHEMA.iterrows():
+
+        download_and_process(dataset["id"], download_kwargs, process_kwargs)
 
 
 def process_all():
