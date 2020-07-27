@@ -6,7 +6,6 @@ authors = ["Kevin Hu <kevinhuwest@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pandas = "^1.0.5"
 matplotlib = "^3.3.0"
 gtfparse = "^1.2.0"
 scipy = "^1.5.1"
@@ -17,6 +16,7 @@ tables = "^3.6.1"
 xlrd = "^1.2.0"
 jupyter = "^1.0.0"
 ipython = "^7.16.1"
+pandas = "^1.0.5"
 
 [tool.poetry.dev-dependencies]
 

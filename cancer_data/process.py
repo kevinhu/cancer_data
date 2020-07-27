@@ -42,7 +42,7 @@ def check_dependencies(dependencies):
 
     """
 
-    if dependencies is None or dependencies != dependencies:
+    if dependencies is None or dependencies != dependencies or dependencies == "":
         return
 
     for d in dependencies.split(","):

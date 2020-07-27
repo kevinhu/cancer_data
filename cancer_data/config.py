@@ -16,3 +16,4 @@ PREVIEW_DIR = DATA_DIR / "preview"
 
 SCHEMA = pd.read_csv(_PROJECT_DIR / "schema.csv")
 SCHEMA.index = SCHEMA["id"]
+SCHEMA["dependencies"] = SCHEMA["dependencies"].fillna("")
