@@ -1,6 +1,6 @@
 # cancer_data
 
-This package provides that handle the downloading and processing of several public genomics datasets useful for cancer research.
+This package handles the downloading and processing of several public genomics datasets useful for cancer research.
 
 ## Datasets
 
@@ -33,13 +33,14 @@ The next steps depend on the `type` of the dataset:
 - `primary_dataset` objects are preprocessed and converted into HDF5 format.
 - `secondary_dataset` objects are defined as being made from `primary_dataset` objects. These are also processed and converted into HDF5 format.
 
-To keep track of which datasets are necessary for producing another, the `dependencies` column specifies the dataset `id`s that are required for making another. For instance, the `ccle_proteomics` dataset, which has a `type` of `primary_dataset`, is dependent on the `ccle_annotations` dataset for converting cell line names to Achilles IDs. When running the processing pipeline, the script will automatically check for the presence of dependencies, and raise an error if they are not found.
+To keep track of which datasets are necessary for producing another, the `dependencies` column specifies the dataset `id`s that are required for making another. For instance, the `ccle_proteomics` dataset is dependent on the `ccle_annotations` dataset for converting cell line names to Achilles IDs. When running the processing pipeline, the script will automatically check that dependencies are met, and raise an error if they are not found.
 
 ## Notes
 
 ### Filtering
 Some datasets have filtering applied to reduce their size. These are listed below:
 - CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
+- When constructing binary mutation matrices (`depmap_damaging` and `depmap_hotspot`), a minimum mutation frequency is used to remove especially rare mutations.
 
 ### System requirements
-The size of the downloaded raw files is approximately 20 GB, and that of the processed HDFs is also about 20 GB. On a relatively recent machine with a fast SSD,  processing all of the files takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
+The size of the downloaded raw files is approximately 15 GB, and that of the processed HDFs is about 20 GB. On a relatively recent machine with a fast SSD,  processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
