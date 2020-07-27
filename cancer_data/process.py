@@ -23,6 +23,7 @@ class Processors(
     the individual collections.
 
     """
+
     def __init__(self):
         return
 
@@ -130,6 +131,42 @@ def remove(dataset_id):
 
     remove_raw(dataset_id)
     remove_processed(dataset_id)
+
+
+def remove_all_raw():
+    """
+
+    Removes all raw dataset files.
+
+    """
+
+    for _, dataset in SCHEMA.iterrows():
+
+        remove_raw(dataset["id"])
+
+
+def remove_all_processed():
+    """
+
+    Removes all processed dataset files.
+
+    """
+
+    for _, dataset in SCHEMA.iterrows():
+
+        remove_processed(dataset["id"])
+
+
+def remove_all():
+    """
+
+    Removes all raw and processed dataset files.
+
+    """
+
+    for _, dataset in SCHEMA.iterrows():
+
+        remove(dataset["id"])
 
 
 def process(dataset_id, overwrite=False, delete_raw=False):
