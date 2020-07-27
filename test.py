@@ -1,3 +1,6 @@
-from cancer_data import process, download
+from cancer_data import process, download, access
 
-process.process("gtex_manifest", overwrite=True)
+df = access.Datasets.load("ccle_annotations")
+
+print(df)
+
