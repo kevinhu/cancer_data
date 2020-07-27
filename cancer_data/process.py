@@ -1,5 +1,5 @@
+from . import access
 from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
-from .access import Datasets
 from .utils import bcolors, file_exists, export_hdf
 
 from .processors import ccle, depmap, gtex, other, tcga
@@ -51,7 +51,7 @@ def generate_preview(dataset_id):
 
     """
 
-    df = Datasets.load(dataset_id, stop=PREVIEW_LEN)
+    df = access.load(dataset_id, stop=PREVIEW_LEN)
 
     df.to_csv(f"{PREVIEW_DIR}/{dataset_id}.txt", sep="\t")
 

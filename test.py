@@ -1,6 +1,4 @@
 from cancer_data import process, download, access
 
-df = access.Datasets.load("ccle_annotations")
-
-print(df)
+process.process("gtex_manifest", overwrite=True)
 

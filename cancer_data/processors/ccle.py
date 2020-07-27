@@ -7,7 +7,7 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 
-from ..access import Datasets
+from .. import access
 
 
 # minimum number of valid samples per
@@ -62,7 +62,7 @@ class Processors:
 
         df = pd.read_excel(raw_path)
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -130,12 +130,12 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        ccle_rppa_info = Datasets.load("ccle_rppa_info")
+        ccle_rppa_info = access.load("ccle_rppa_info")
         antibody_name_map = dict(
             zip(ccle_rppa_info["Antibody_Name"], ccle_rppa_info["format_id"])
         )
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -163,7 +163,7 @@ class Processors:
         df = pd.read_csv(raw_path, sep="\t", index_col=0)
         df = df.iloc[:, 1:]
 
-        g19_7_definitions = Datasets.load("g19_7_definitions")
+        g19_7_definitions = access.load("g19_7_definitions")
 
         gene_name_map = dict(
             zip(g19_7_definitions["gene_id"], g19_7_definitions["gene_name"])
@@ -178,7 +178,7 @@ class Processors:
 
         df = df.T
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -204,7 +204,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, sep="\t")
 
-        g19_7_definitions = Datasets.load("g19_7_definitions")
+        g19_7_definitions = access.load("g19_7_definitions")
 
         gene_name_map = dict(
             zip(g19_7_definitions["gene_id"], g19_7_definitions["gene_name"])
@@ -221,7 +221,7 @@ class Processors:
         df = df.astype(np.float16)
         df = df.T
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -283,7 +283,7 @@ class Processors:
         df = df.iloc[:, 1:]
         df = df.T
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -327,7 +327,7 @@ class Processors:
         df = df.T
         df = df.astype(np.float16)
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -360,7 +360,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -393,7 +393,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -432,7 +432,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -469,7 +469,7 @@ class Processors:
         df[df == "     NA"] = np.nan
         df = df.astype(np.float16)
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )
@@ -575,7 +575,7 @@ class Processors:
 
         df = df.T
 
-        ccle_annotations = Datasets.load("ccle_annotations")
+        ccle_annotations = access.load("ccle_annotations")
         ccle_to_depmap = dict(
             zip(ccle_annotations["CCLE_ID"], ccle_annotations["depMapID"])
         )

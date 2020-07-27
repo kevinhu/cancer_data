@@ -3,7 +3,7 @@ from collections import Counter
 import numpy as np
 import pandas as pd
 
-from ..access import Datasets
+from .. import access
 from ..utils import parentheses_to_snake
 
 
@@ -87,7 +87,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        depmap_annotations = Datasets.load("depmap_annotations")
+        depmap_annotations = access.load("depmap_annotations")
         ccle_to_depmap = dict(
             zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
         )
@@ -120,7 +120,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        depmap_annotations = Datasets.load("depmap_annotations")
+        depmap_annotations = access.load("depmap_annotations")
         ccle_to_depmap = dict(
             zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
         )
@@ -194,7 +194,7 @@ class Processors:
 
         """
 
-        df = Datasets.load("depmap_mutations")
+        df = access.load("depmap_mutations")
 
         df = df[df["Variant_annotation"] == "damaging"]
 
@@ -230,7 +230,7 @@ class Processors:
 
         """
 
-        df = Datasets.load("depmap_mutations")
+        df = access.load("depmap_mutations")
 
         df = df[(df["isCOSMIChotspot"] == True) | (df["isTCGAhotspot"] == True)]
 
@@ -293,7 +293,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        prism_primary_info = Datasets.load("prism_primary_info")
+        prism_primary_info = access.load("prism_primary_info")
         primary_name_map = dict(
             zip(prism_primary_info["column_name"], prism_primary_info["format_name"])
         )
@@ -343,7 +343,7 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
 
-        prism_secondary_info = Datasets.load("prism_secondary_info")
+        prism_secondary_info = access.load("prism_secondary_info")
         primary_name_map = dict(
             zip(
                 prism_secondary_info["column_name"], prism_secondary_info["format_name"]

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from ..access import Datasets
+from .. import access
 from ..utils import concat_cols
 
 # minimum number of valid samples per
@@ -54,7 +54,7 @@ def gtex_splicing(raw_path):
 
     df = df.set_index("exon_id")
 
-    gtex_manifest = Datasets.load("gtex_manifest")
+    gtex_manifest = access.load("gtex_manifest")
     sra_to_gtex = dict(
         zip(gtex_manifest["Comment[ENA_RUN]"], gtex_manifest["Source Name"])
     )
@@ -134,8 +134,8 @@ class Processors:
 
         """
 
-        gtex_manifest_1 = Datasets.load("gtex_2919_manifest")
-        gtex_manifest_2 = Datasets.load("gtex_5214_manifest")
+        gtex_manifest_1 = access.load("gtex_2919_manifest")
+        gtex_manifest_2 = access.load("gtex_5214_manifest")
 
         gtex_manifest = pd.concat([gtex_manifest_1, gtex_manifest_2], axis=0, sort=True)
 

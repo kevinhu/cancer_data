@@ -1,7 +1,5 @@
 from gtfparse import read_gtf
 
-from ..access import Datasets
-
 
 class Processors:
     """
