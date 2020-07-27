@@ -1,22 +1,53 @@
-from config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
+from .config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
 
-from utils import download_from_url
+from .utils import download_from_url
 
-if __name__ == "__main__":
 
-    for _, file in SCHEMA.iterrows():
+def download(dataset_id):
+    """
 
-        if file["type"] == "reference":
+    Handler for downloading a dataset.
 
-            download_from_url(
-                file["url"],
-                f"{REFERENCE_DIR}/{file['downloaded_name']}",
-                reference_md5 = file['downloaded_md5']
-            )
+    Args:
+        dataset_id (str): ID of the dataset
 
-        elif file["type"] == "primary_dataset":
-            download_from_url(
-                file["url"],
-                f"{DOWNLOAD_DIR}/{file['downloaded_name']}",
-                reference_md5 = file['downloaded_md5']
-            )
+    """
+
+    assert dataset_id in SCHEMA.index, f"{dataset_id} is not in the schema."
+
+    dataset_row = SCHEMA.loc[dataset_id]
+
+    dataset_type = dataset_row["type"]
+    dataset_url = dataset_row["url"]
+    dataset_downloaded_name = dataset_row["downloaded_name"]
+    dataset_downloaded_md5 = dataset_row["downloaded_md5"]
+
+    if dataset_type == "reference":
+
+        download_from_url(
+            dataset_url,
+            f"{REFERENCE_DIR}/{dataset_downloaded_name}",
+            reference_md5=dataset_downloaded_md5,
+        )
+
+    elif dataset_type == "primary_dataset":
+        download_from_url(
+            dataset_url,
+            f"{DOWNLOAD_DIR}/{dataset_downloaded_name}",
+            reference_md5=dataset_downloaded_md5,
+        )
+
+    else:
+
+        raise ValueError("Unsupported dataset type.")
+
+def download_all():
+    """
+
+    Process all datasets in the schema.
+
+    """
+
+    for _, dataset in SCHEMA.iterrows():
+
+        download(dataset)

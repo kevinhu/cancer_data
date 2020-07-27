@@ -59,13 +59,10 @@ def generate_preview(dataset_id):
 def process(dataset_id, overwrite=False):
     """
 
-    Handler for processing a dataset
+    Handler for processing a dataset.
 
     Args:
         dataset_id (str): ID of the dataset
-        downloaded_name (str): name of the raw downloaded dataset file
-        dependencies (str): dependencies of the dataset
-        dataset_type (str): type of the dataset
 
     """
 
@@ -121,6 +118,6 @@ def process_all():
 
     """
 
-    for _, file in SCHEMA.iterrows():
+    for _, dataset in SCHEMA.iterrows():
 
-        process(file["id"])
+        process(dataset["id"])
