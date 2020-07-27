@@ -12,6 +12,12 @@ class Processors(
     other.Processors,
     tcga.Processors,
 ):
+    """
+
+    Subclass for merging the processing methods from
+    the individual collections.
+
+    """
     def __init__(self):
         return
 

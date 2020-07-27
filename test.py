@@ -1,4 +1,4 @@
-from cancer_data import process, download, access
+import cancer_data
 
-process.process("gtex_manifest", overwrite=True)
+cancer_data.process("gtex_manifest", overwrite=True)
 

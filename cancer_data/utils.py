@@ -23,6 +23,15 @@ class bcolors:
 
 
 def file_exists(file_path):
+    """
+
+    Check if a file exists.
+
+    Args:
+        file_path (str): path to the file
+
+    """
+
     return Path(file_path).is_file()
 
 
@@ -65,26 +74,33 @@ def parentheses_to_snake(x):
     return f"{x_split[0]}_{x_split[1][:-1]}"
 
 
-def export_hdf(output_id, df):
+def export_hdf(dataset_id, df):
+    """
+    Exports a processed dataset to HDF.
 
-    df.to_hdf(f"{PROCESSED_DIR}/{output_id}.h5", key=output_id, mode="w")
+    Args:
+        dataset_id: string
+            id of the dataset
+        df: DataFrame
+            dataset to save
+
+    """
+
+    df.to_hdf(f"{PROCESSED_DIR}/{dataset_id}.h5", key=dataset_id, mode="w")
 
 
 def md5_match(file_path, reference_md5):
-
     """
     Checks if a file matches a provided md5sum
 
-    Parameters
-    ----------
-    file_path: string
-        path to the file to check
-    reference_md5: string
-        md5sum to check
+    Args:
+        file_path: string
+            path to the file to check
+        reference_md5: string
+            md5sum to check
 
-    Returns
-    -------
-    True if the file matches the md5sum, False otherwise
+    Returns:
+        True if the file matches the md5sum, False otherwise
 
     """
 
@@ -107,23 +123,21 @@ def download_from_url(
     Shows progress bar and checks md5sum. Also 
     checks if file is already downloaded.
 
-    Parameters
-    ----------
-    url: string
-        URL to download from
-    output_path: string
-        path to save the output to
-    overwrite: boolean
-        whether or not to overwrite the file if it already exists
-    reference_md5: string
-        md5sum to check
-    is_retry:
-        whether or not the download is a retry (if the md5sum)
-        does not match, is called again
+    Args:
+        url: string
+            URL to download from
+        output_path: string
+            path to save the output to
+        overwrite: boolean
+            whether or not to overwrite the file if it already exists
+        reference_md5: string
+            md5sum to check
+        is_retry:
+            whether or not the download is a retry (if the md5sum)
+            does not match, is called again
 
-    Returns
-    -------
-    True if download was successful, False otherwise
+    Returns:
+        True if download was successful, False otherwise
 
     """
 
@@ -176,7 +190,7 @@ def download_from_url(
 
     t.close()
 
-    if total_size != 0 and t.n != total_size:
+    if total_size not in (0, t.n):
         print("Download error: sizes do not match")
 
         return False
