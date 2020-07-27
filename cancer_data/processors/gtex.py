@@ -8,6 +8,9 @@ from ..utils import concat_cols
 # splicing event for gtex_splicing()
 MIN_VALID_COUNT = 100
 
+# minimum standard deviation per splicing
+# event for gtex_splicing()
+MIN_STDEV = 0.01
 
 def gtex_splicing(raw_path):
     """
@@ -66,6 +69,11 @@ def gtex_splicing(raw_path):
     keep_cols = df.columns[nan_counts < len(df) - MIN_VALID_COUNT]
 
     df = df[keep_cols]
+
+    stdevs = df.std(axis=0)
+    df = df[df.columns[stdevs >= MIN_STDEV]]
+
+    df = df.astype(np.float16)
 
     return df
 

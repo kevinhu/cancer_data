@@ -8,6 +8,10 @@ from ..utils import concat_cols
 # splicing event for tcga_splicing()
 MIN_VALID_COUNT = 100
 
+# minimum standard deviation per splicing
+# event for tcga_splicing()
+MIN_STDEV = 0.01
+
 # tumor abbreviations map
 TCGA_MAP = {
     "acute myeloid leukemia": "LAML",
@@ -97,6 +101,12 @@ def tcga_splicing(raw_path):
         nan_counts = chunk.isna().sum(axis=0)
 
         keep_cols = chunk.columns[nan_counts < len(chunk) - MIN_VALID_COUNT]
+
+        chunk = chunk.filter(keep_cols, axis=1)
+
+        stdevs = chunk.std(axis=0)
+
+        keep_cols = chunk.columns[stdevs >= MIN_STDEV]
 
         chunk = chunk.filter(keep_cols, axis=1)
 

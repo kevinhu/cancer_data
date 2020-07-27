@@ -14,6 +14,9 @@ from ..access import Datasets
 # splicing event for ccle_splicing()
 MIN_VALID_COUNT = 100
 
+# minimum standard deviation per splicing
+# event for ccle_splicing()
+MIN_STDEV = 0.01
 
 class Processors:
     """
@@ -292,6 +295,9 @@ class Processors:
         keep_cols = df.columns[exonusage_nans < len(df) - MIN_VALID_COUNT]
 
         df = df[keep_cols]
+
+        stdevs = df.std(axis=0)
+        df = df[df.columns[stdevs >= MIN_STDEV]]
 
         df = df.astype(np.float16)
 

@@ -1,13 +1,13 @@
+from hashlib import md5
+from pathlib import Path
+
+from functools import reduce
+
 import requests
-import os
 
 import tqdm
 from tqdm import tqdm
 
-from hashlib import md5
-from pathlib import Path
-
-import pandas as pd
 from .config import PROCESSED_DIR
 
 
