@@ -15,8 +15,10 @@ class Processors(
     def __init__(self):
         return
 
+
 # row to generate in generate_preview()
 PREVIEW_LEN = 10
+
 
 def check_dependencies(dependencies):
     """
@@ -54,7 +56,7 @@ def generate_preview(dataset_id):
     df.to_csv(f"{PREVIEW_DIR}/{dataset_id}.txt", sep="\t")
 
 
-def process(dataset_id, downloaded_name, dependencies, dataset_type):
+def process(dataset_id, overwrite=False):
     """
 
     Handler for processing a dataset
@@ -67,13 +69,21 @@ def process(dataset_id, downloaded_name, dependencies, dataset_type):
 
     """
 
+    assert dataset_id in SCHEMA.index, f"{dataset_id} is not in the schema."
+
+    dataset_row = SCHEMA.loc[dataset_id]
+
+    downloaded_name = dataset_row["downloaded_name"]
+    dependencies = dataset_row["dependencies"]
+    dataset_type = dataset_row["type"]
+
     if dataset_type in ["primary_dataset", "secondary_dataset"]:
 
         output_path = f"{PROCESSED_DIR}/{dataset_id}.h5"
 
         id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
 
-        if file_exists(output_path):
+        if file_exists(output_path) and not overwrite:
 
             print(f"{id_bold} already processed, skipping")
 
@@ -113,9 +123,4 @@ def process_all():
 
     for _, file in SCHEMA.iterrows():
 
-        process(file["id"], file["downloaded_name"], file["dependencies"], file["type"])
-
-
-if __name__ == "__main__":
-
-    process_all()
+        process(file["id"])
