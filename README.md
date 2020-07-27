@@ -1,4 +1,4 @@
-# cancer-data
+# cancer_data
 
 This package provides that handle the downloading and processing of several public genomics datasets useful for cancer research.
 
@@ -18,7 +18,7 @@ A complete description of the datasets may be found in [schema.txt](https://gith
 The goal of this package is to make statistical analysis and coordination of these datasets easier. To that end, it provides the following features:
 
 1. Harmonization: datasets within a collection have sample IDs reduced to the same format. For instance, all CCLE+DepMap datasets have been modified to use Achilles/Arxspan IDs, rather than cell line names.
-2. Speed: processed datasets are all stored in high-performance [HDF5 format](https://en.wikipedia.org/wiki/Hierarchical_Data_Format), allowing large tables to be loaded magnitudes faster than with CSV or TSV formats.
+2. Speed: processed datasets are all stored in high-performance [HDF5 format](https://en.wikipedia.org/wiki/Hierarchical_Data_Format), allowing large tables to be loaded orders of magnitude faster than with CSV or TSV formats.
 3. Space: tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format.
 
 ## How it works
@@ -35,3 +35,11 @@ The next steps depend on the `type` of the dataset:
 
 To keep track of which datasets are necessary for producing another, the `dependencies` column specifies the dataset `id`s that are required for making another. For instance, the `ccle_proteomics` dataset, which has a `type` of `primary_dataset`, is dependent on the `ccle_annotations` dataset for converting cell line names to Achilles IDs. When running the processing pipeline, the script will automatically check for the presence of dependencies, and raise an error if they are not found.
 
+## Notes
+
+### Filtering
+Some datasets have filtering applied to reduce their size. These are listed below:
+- CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
+
+### System requirements
+The size of the downloaded raw files is approximately 20 GB, and that of the processed HDFs is also about 20 GB. On a relatively recent machine with a fast SSD,  processing all of the files takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
