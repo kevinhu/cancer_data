@@ -1,11 +1,21 @@
 [tool.poetry]
-name = "cancer-data"
+name = "cancer_data"
 version = "0.1.0"
-description = ""
+description = "Preprocessing for various cancer genomics datasets"
 authors = ["Kevin Hu <kevinhuwest@gmail.com>"]
 
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/kevinhu/cancer_data"
+repository = "https://github.com/kevinhu/cancer_data"
+keywords = ["cancer", "data", "genomics"]
+
+include = [
+    "LICENSE",
+]
+
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.6"
 matplotlib = "^3.3.0"
 gtfparse = "^1.2.0"
 scipy = "^1.5.1"
