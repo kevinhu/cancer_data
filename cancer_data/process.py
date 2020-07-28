@@ -192,7 +192,6 @@ def process(dataset_id, overwrite=False, delete_raw=False):
     dataset_row = SCHEMA.loc[dataset_id]
 
     downloaded_name = dataset_row["downloaded_name"]
-    dependencies = dataset_row["dependencies"]
     dataset_type = dataset_row["type"]
 
     if dataset_type in ["primary_dataset", "secondary_dataset"]:
@@ -215,7 +214,7 @@ def process(dataset_id, overwrite=False, delete_raw=False):
 
                 print(f"Processing {id_bold}")
 
-                check_dependencies(dependencies)
+                check_dependencies(dataset_id)
 
                 if dataset_type in ["primary_dataset"]:
                     df = handler(DOWNLOAD_DIR / downloaded_name)
@@ -260,7 +259,7 @@ def download_and_process(dataset_id, download_kwargs={}, process_kwargs={}):
     process(dataset_id, **process_kwargs)
 
 
-def download_and_process_all(dataset_id, download_kwargs={}, process_kwargs={}):
+def download_and_process_all(download_kwargs={}, process_kwargs={}):
     """
 
     Download and process all datasets in the schema.
