@@ -4,7 +4,7 @@ from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 from .utils import bcolors, file_exists
 
 
-def load(dataset_id, **kwargs):
+def load(dataset_id, **read_hdf_kwargs):
     """
 
     Load a processed dataset.
@@ -22,7 +22,7 @@ def load(dataset_id, **kwargs):
     assert dataset_id in SCHEMA.index, f"{id_bold} not in schema."
     assert file_exists(dataset_path), f"{id_bold} does not exist."
 
-    df = pd.read_hdf(dataset_path, **kwargs)
+    df = pd.read_hdf(dataset_path, **read_hdf_kwargs)
 
     return df
 

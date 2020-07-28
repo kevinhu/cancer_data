@@ -45,7 +45,7 @@ def download(dataset_id):
 def download_all():
     """
 
-    Process all datasets in the schema.
+    Download all datasets in the schema.
 
     """
 

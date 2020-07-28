@@ -32,7 +32,7 @@ class Processors(
 PREVIEW_LEN = 10
 
 
-def check_dependencies(dependencies):
+def check_dependencies(dataset_id):
     """
 
     Check if dataset dependencies are all met.
@@ -42,14 +42,20 @@ def check_dependencies(dependencies):
 
     """
 
+    id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
+    assert dataset_id in SCHEMA.index, f"{id_bold} is not in the schema."
+
+    dependencies = SCHEMA.loc[dataset_id, "dependencies"]
+
     if dependencies is None or dependencies != dependencies or dependencies == "":
         return
 
     for d in dependencies.split(","):
 
         d_file = f"{PROCESSED_DIR}/{d}.h5"
+        d_bold = f"{bcolors.BOLD}{d}{bcolors.ENDC}"
 
-        assert file_exists(d_file), f"Dependency {d} does not exist."
+        assert file_exists(d_file), f"Dependency {d_bold} does not exist."
 
 
 def generate_preview(dataset_id):
@@ -266,7 +272,7 @@ def download_and_process_all(dataset_id, download_kwargs={}, process_kwargs={}):
         download_and_process(dataset["id"], download_kwargs, process_kwargs)
 
 
-def process_all():
+def process_all(process_kwargs={}):
     """
 
     Process all datasets in the schema.
@@ -275,4 +281,4 @@ def process_all():
 
     for _, dataset in SCHEMA.iterrows():
 
-        process(dataset["id"])
+        process(dataset["id"], **process_kwargs)
