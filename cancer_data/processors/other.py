@@ -1,5 +1,5 @@
 from gtfparse import read_gtf
-
+import pandas as pd
 
 class Processors:
     """
@@ -7,6 +7,25 @@ class Processors:
     Other dataset processors.
 
     """
+
+    @staticmethod
+    def hg19_sizes(raw_path):
+        """
+
+        Process hg19 chromosome sizes.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
+        df = pd.read_csv(raw_path, sep="\t", names=["chrom", "size"])
+
+        return df
 
     @staticmethod
     def g19_7_definitions(raw_path):
