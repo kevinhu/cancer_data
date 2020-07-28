@@ -1,3 +1,3 @@
 import cancer_data
 
-print(cancer_data.schema())
+cancer_data.process("drive",overwrite=True)

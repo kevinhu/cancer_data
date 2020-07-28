@@ -91,6 +91,8 @@ class Processors:
         ccle_to_depmap = dict(
             zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
         )
+        ccle_to_depmap["AZ521_STOMACH"] = "ACH-001015"
+        ccle_to_depmap["GISTT1_GASTROINTESTINAL_TRACT"] = "ACH-002332"
 
         df.columns = map(ccle_to_depmap.get, df.columns)
         df.index = df.index.map(parentheses_to_snake)
