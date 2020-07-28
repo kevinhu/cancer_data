@@ -122,3 +122,34 @@ def summary(dataset_id):
         )
 
     return dataset_summary
+
+
+def schema():
+    """
+
+    Return a copy of the schema
+
+    """
+
+    return SCHEMA.copy(deep=True)
+
+
+def types():
+    """
+
+    Return a sorted list of all the dataset types
+
+    """
+
+    return sorted(list(set(SCHEMA["type"])))
+
+def sources():
+    """
+
+    Return a sorted list of all the dataset sources
+
+    """
+
+    print(SCHEMA["source"])
+
+    return sorted(list(set(SCHEMA["source"])))
