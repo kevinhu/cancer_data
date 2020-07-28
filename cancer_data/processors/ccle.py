@@ -46,6 +46,27 @@ class Processors:
         return df
 
     @staticmethod
+    def ccle_chromatin(raw_path):
+        """
+
+        Process CCLE chromatin profiling estimates.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
+        df = pd.read_csv(raw_path, index_col=1)
+
+        df = df.iloc[:, 1:]
+
+        return df
+
+    @staticmethod
     def ccle_translocations_svaba(raw_path):
         """
 
