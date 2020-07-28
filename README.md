@@ -44,3 +44,52 @@ Some datasets have filtering applied to reduce their size. These are listed belo
 
 ### System requirements
 The size of the downloaded raw files is approximately 15 GB, and that of the processed HDFs is about 20 GB. On a relatively recent machine with a fast SSD,  processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
+
+## Functions
+
+### Downloads
+
+`cancer_data.download(dataset_id)`: Download a dataset.
+
+`cancer_data.download_all()`: Download all datasets in the schema.
+
+### Processing
+
+`cancer_data.check_dependencies(dataset_id)`: Checks if all the dependencies of a dataset are present.
+
+`cancer_data.process(dataset_id, overwrite=False, delete_raw=False)`: Process a downloaded dataset.
+
+`cancer_data.process_all(dataset_id, process_kwargs={})`: Process all datasets.
+
+`cancer_data.download_and_process(dataset_id, download_kwargs={}, process_kwargs={})`: Download and process a dataset.
+
+`cancer_data.download_and_process_all(dataset_id, download_kwargs={}, process_kwargs={})`: Download and process all datasets.
+
+### Removal
+
+`cancer_data.remove_raw(dataset_id)`: Remove the raw downloaded file of a dataset.
+
+`cancer_data.remove_all_raw(dataset_id)`: Remove all raw dataset files.
+
+`cancer_data.remove_processed(dataset_id)`: Remove the processed file of a dataset.
+
+`cancer_data.remove_all_processed(dataset_id)`: Remove all processed dataset files.
+
+`cancer_data.remove(dataset_id)`: Remove the raw and processed files of a dataset.
+
+`cancer_data.remove_all(dataset_id)`: Remove all dataset files.
+
+### Access
+
+`cancer_data.load(dataset_id **read_hdf_kwargs)`: Load a processed dataset.
+
+`cancer_data.description(dataset_id)`: Get the description of a dataset.
+
+`cancer_data.summary(dataset_id)`: Get a summary of a dataset.
+
+`cancer_data.schema()`: Return a copy of the schema.
+
+`cancer_data.types()`: Return a sorted list of all the dataset types.
+
+`cancer_data.sources()`: Return a sorted list of all the dataset sources.
+
