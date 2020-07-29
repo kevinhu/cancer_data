@@ -182,6 +182,9 @@ class Processors:
         df["Start_position"] = df["Start_position"].astype(int)
         df["End_position"] = df["End_position"].astype(int)
 
+        df["isCOSMIChotspot"] = df["isCOSMIChotspot"].astype(bool)
+        df["isTCGAhotspot"] = df["isTCGAhotspot"].astype(bool)
+
         return df
 
     @staticmethod
@@ -241,7 +244,7 @@ class Processors:
         df["count"] = df["Hugo_Symbol"].apply(mut_counts.get)
         df = df[df["count"] >= MIN_COUNT_CUTOFF]
 
-        # remove damaged duplicates
+        # remove hotspot duplicates
         df["id"] = df["Hugo_Symbol"] + "_" + df["DepMap_ID"]
         df = df.drop_duplicates(subset=["id"], keep="first")
 
