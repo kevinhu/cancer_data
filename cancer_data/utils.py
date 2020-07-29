@@ -10,6 +10,9 @@ from tqdm import tqdm
 
 from .config import PROCESSED_DIR
 
+COMPLEVEL = 9
+COMPLIB = "bzip2"
+
 
 class bcolors:
     HEADER = "\033[95m"
@@ -86,7 +89,13 @@ def export_hdf(dataset_id, df):
 
     """
 
-    df.to_hdf(f"{PROCESSED_DIR}/{dataset_id}.h5", key=dataset_id, mode="w")
+    df.to_hdf(
+        f"{PROCESSED_DIR}/{dataset_id}.h5",
+        key=dataset_id,
+        complevel=COMPLEVEL,
+        complib=COMPLIB,
+        mode="w",
+    )
 
 
 def md5_match(file_path, reference_md5):

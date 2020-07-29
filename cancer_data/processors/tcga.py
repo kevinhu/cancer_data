@@ -1,7 +1,10 @@
+import tempfile
+
 import numpy as np
 import pandas as pd
 
-from ..utils import concat_cols
+from ..utils import concat_cols, file_exists, export_hdf
+from .. import access
 
 # minimum number of valid samples per
 # splicing event for tcga_splicing()
@@ -49,7 +52,7 @@ TCGA_MAP = {
 }
 
 
-def tcga_splicing(raw_path):
+def tcga_splicing(raw_path, chunked=False):
     """
 
     General handler for all TCGA splicing files.
@@ -57,15 +60,19 @@ def tcga_splicing(raw_path):
     Args:
         raw_path (str): the complete path to the
                         raw downloaded file
+        chunked (bool): whether or not to split
+                        the dataset by chunks
 
     Returns:
         Processed DataFrame
 
     """
 
-    chunk_iterator = pd.read_csv(raw_path, sep="\t", chunksize=1000)
+    chunk_iterator = pd.read_csv(raw_path, sep="\t", chunksize=10000)
 
-    merged = []
+    header = True
+
+    temp = tempfile.NamedTemporaryFile()
 
     for chunk in chunk_iterator:
 
@@ -95,23 +102,32 @@ def tcga_splicing(raw_path):
 
         chunk = chunk.set_index("exon_id")
         chunk = chunk.astype(np.float16)
-        chunk = chunk.T
 
-        nan_counts = chunk.isna().sum(axis=0)
+        nan_counts = chunk.isna().sum(axis=1)
 
-        keep_cols = chunk.columns[nan_counts < len(chunk) - MIN_VALID_COUNT]
+        keep_rows = chunk.index[nan_counts < len(chunk) - MIN_VALID_COUNT]
 
-        chunk = chunk.filter(keep_cols, axis=1)
+        chunk = chunk.filter(keep_rows, axis=0)
 
-        stdevs = chunk.std(axis=0)
+        stdevs = chunk.std(axis=1)
 
-        keep_cols = chunk.columns[stdevs >= MIN_STDEV]
+        keep_rows = chunk.index[stdevs >= MIN_STDEV]
 
-        chunk = chunk.filter(keep_cols, axis=1)
+        chunk = chunk.filter(keep_rows, axis=0)
 
-        merged.append(chunk)
+        chunk.to_csv(temp, mode="a", header=header)
 
-    merged = pd.concat(merged, axis=1)
+        if header:
+            header = False
+
+    columns = pd.read_csv(temp, index_col=0, nrows=0).columns
+    col_dtypes = {x: np.float16 for x in columns}
+
+    merged = pd.read_csv(temp, index_col=0, dtype=col_dtypes)
+
+    temp.close()
+
+    merged = merged.T
 
     # remove prefix identifiers from names
     merged.index = merged.index.map(lambda x: x.split(".")[0])
@@ -375,3 +391,29 @@ class Processors:
         """
 
         return tcga_splicing(raw_path)
+
+    @staticmethod
+    def tcga_mx_chunks():
+        """
+
+        Split the TCGA MX splicing events into chunks.
+
+        Returns:
+            Chunk names
+
+        """
+
+        df = access.load("tcga_mx")
+
+        cols = np.array(df.columns)
+        col_chunks = np.array_split(cols, 8)
+
+        for idx, col_chunk in enumerate(col_chunks):
+
+            chunk = df[col_chunk]
+
+            export_hdf(f"tcga_mx_{idx}", chunk)
+
+        chunks_info = pd.DataFrame(index=range(8))
+
+        return chunks_info
