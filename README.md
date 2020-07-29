@@ -19,7 +19,7 @@ The goal of this package is to make statistical analysis and coordination of the
 
 1. Harmonization: datasets within a collection have sample IDs reduced to the same format. For instance, all CCLE+DepMap datasets have been modified to use Achilles/Arxspan IDs, rather than cell line names.
 2. Speed: processed datasets are all stored in high-performance [HDF5 format](https://en.wikipedia.org/wiki/Hierarchical_Data_Format), allowing large tables to be loaded orders of magnitude faster than with CSV or TSV formats.
-3. Space: tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format.
+3. Space: tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format. Compression is also used, resulting in size reductions by factors of over 10 for sparse matrices such as mutation tables.
 
 ## How it works
 
@@ -41,6 +41,7 @@ To keep track of which datasets are necessary for producing another, the `depend
 Some datasets have filtering applied to reduce their size. These are listed below:
 - CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
 - When constructing binary mutation matrices (`depmap_damaging` and `depmap_hotspot`), a minimum mutation frequency is used to remove especially rare mutations.
+- The TCGA MX splicing dataset is extremely large (approximately 10,000 rows by 900,000 columns), so it has been split column-wise into 8 chunks.
 
 ### System requirements
 The size of the downloaded raw files is approximately 15 GB, and that of the processed HDFs is about 20 GB. On a relatively recent machine with a fast SSD,  processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
