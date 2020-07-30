@@ -256,6 +256,9 @@ def process(dataset_id, overwrite=False, delete_raw=False):
 
             return
 
+    else:
+        raise ValueError("Unsupported dataset type.")
+
 
 def download_and_process(dataset_id, download_kwargs={}, process_kwargs={}):
     """
@@ -275,9 +278,13 @@ def download_and_process(dataset_id, download_kwargs={}, process_kwargs={}):
 
     if is_downloadable(dataset_id):
         download(dataset_id, **download_kwargs)
+    else:
+        raise ValueError("Unsupported dataset type.")
 
     if is_processable(dataset_id):
         process(dataset_id, **process_kwargs)
+    else:
+        raise ValueError("Unsupported dataset type.")
 
 
 def download_and_process_all(download_kwargs={}, process_kwargs={}):
