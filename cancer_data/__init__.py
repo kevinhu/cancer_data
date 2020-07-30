@@ -10,6 +10,6 @@ from .process import (
     remove_all_processed,
     remove_all,
 )
-from .access import load, description, summary, types, sources, schema
+from .access import load, description, status, summary, types, sources, schema
 
 __version__ = "0.1.0"

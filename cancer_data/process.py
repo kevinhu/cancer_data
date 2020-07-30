@@ -1,13 +1,14 @@
 import os
 import warnings
 
-from . import access
+from .access import load
 from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 from .utils import bcolors, file_exists, export_hdf
 
 from .download import is_downloadable, download
 
 from .processors import ccle, depmap, gtex, other, tcga
+from .checks import is_processable
 
 
 class Processors(
@@ -69,7 +70,7 @@ def generate_preview(dataset_id):
 
     """
 
-    df = access.load(dataset_id, stop=PREVIEW_LEN)
+    df = load(dataset_id, stop=PREVIEW_LEN)
 
     df.to_csv(f"{PREVIEW_DIR}/{dataset_id}.txt", sep="\t")
 
@@ -173,26 +174,6 @@ def remove_all():
     for _, dataset in SCHEMA.iterrows():
 
         remove(dataset["id"])
-
-
-def is_processable(dataset_id):
-    """
-
-    Check if a dataset can be processed.
-
-    Args:
-        dataset_id (str): ID of the dataset
-
-    """
-
-    dataset_row = SCHEMA.loc[dataset_id]
-    dataset_type = dataset_row["type"]
-
-    if dataset_type in ["primary_dataset", "secondary_dataset"]:
-
-        return True
-
-    return False
 
 
 def process(dataset_id, overwrite=False, delete_raw=False):

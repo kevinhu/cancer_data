@@ -1,7 +1,8 @@
 import pandas as pd
 
-from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
+from .config import REFERENCE_DIR, DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 from .utils import bcolors, file_exists
+from .checks import is_downloadable, is_processable
 
 
 def load(dataset_id, **read_hdf_kwargs):
@@ -42,6 +43,52 @@ def description(dataset_id):
     assert dataset_id in SCHEMA.index, f"{id_bold} not in schema."
 
     return SCHEMA.loc[dataset_id, "description"]
+
+
+def status():
+    """
+
+    Print the statuses of all datasets in the schema.
+
+    """
+
+    max_id_len = SCHEMA["id"].apply(len).max()
+
+    for _, dataset in SCHEMA.iterrows():
+
+        dataset_id = dataset["id"]
+        dataset_type = dataset["type"]
+        downloaded_name = dataset["downloaded_name"]
+
+        id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
+
+        print(f"{id_bold}:", end="")
+        print((max_id_len-len(dataset_id))*" ",end="")
+
+        if is_downloadable(dataset_id):
+
+            download_path = DOWNLOAD_DIR / downloaded_name
+
+            if dataset_type == "reference":
+
+                download_path = REFERENCE_DIR / downloaded_name
+
+            if file_exists(download_path):
+                print(f"{bcolors.OKGREEN}downloaded{bcolors.ENDC}\t", end="")
+            else:
+                print(f"{bcolors.FAIL}not downloaded{bcolors.ENDC}\t", end="")
+
+        else:
+
+            print("\t\t",end="")
+
+        if is_processable(dataset_id):
+            if file_exists(PROCESSED_DIR / f"{dataset_id}.h5"):
+                print(f"{bcolors.OKGREEN}processed{bcolors.ENDC}", end="")
+            else:
+                print(f"{bcolors.FAIL}not processed{bcolors.ENDC}", end="")
+
+        print()
 
 
 def summary(dataset_id):
@@ -142,6 +189,7 @@ def types():
     """
 
     return sorted(list(set(SCHEMA["type"])))
+
 
 def sources():
     """
