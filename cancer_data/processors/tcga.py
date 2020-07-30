@@ -72,7 +72,7 @@ def tcga_splicing(raw_path, chunked=False):
 
     header = True
 
-    temp = tempfile.NamedTemporaryFile()
+    temp = tempfile.NamedTemporaryFile(mode="w+")
 
     for chunk in chunk_iterator:
 
@@ -105,25 +105,25 @@ def tcga_splicing(raw_path, chunked=False):
 
         nan_counts = chunk.isna().sum(axis=1)
 
-        keep_rows = chunk.index[nan_counts < len(chunk) - MIN_VALID_COUNT]
+        keep_rows = chunk.index[nan_counts < len(chunk.columns) - MIN_VALID_COUNT]
 
-        chunk = chunk.filter(keep_rows, axis=0)
+        chunk = chunk.loc[keep_rows]
 
         stdevs = chunk.std(axis=1)
 
         keep_rows = chunk.index[stdevs >= MIN_STDEV]
 
-        chunk = chunk.filter(keep_rows, axis=0)
+        chunk = chunk.loc[keep_rows]
 
         chunk.to_csv(temp, mode="a", header=header)
 
         if header:
             header = False
 
-    columns = pd.read_csv(temp, index_col=0, nrows=0).columns
+    columns = pd.read_csv(temp.name, index_col=0, nrows=0).columns
     col_dtypes = {x: np.float16 for x in columns}
 
-    merged = pd.read_csv(temp, index_col=0, dtype=col_dtypes)
+    merged = pd.read_csv(temp.name, index_col=0, dtype=col_dtypes)
 
     temp.close()
 
