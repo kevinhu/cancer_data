@@ -2,6 +2,25 @@ from .config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
 
 from .utils import download_from_url
 
+def is_downloadable(dataset_id):
+    """
+
+    Check if a dataset is downloadable.
+
+    Args:
+        dataset_id (str): ID of the dataset
+
+    """
+
+    dataset_row = SCHEMA.loc[dataset_id]
+    dataset_type = dataset_row["type"]
+
+    if dataset_type in ["reference", "primary_dataset"]:
+
+        return True
+
+    return False
+
 
 def download(dataset_id):
     """
@@ -52,8 +71,7 @@ def download_all():
     for _, dataset in SCHEMA.iterrows():
 
         dataset_id = dataset["id"]
-        dataset_type = dataset["type"]
 
-        if dataset_type in ["reference", "primary_dataset"]:
+        if is_downloadable(dataset_id):
 
             download(dataset_id)

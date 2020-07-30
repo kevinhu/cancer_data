@@ -1,3 +1,3 @@
 import cancer_data
 
-cancer_data.download_all()
+cancer_data.process("hg19_fasta")

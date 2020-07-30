@@ -5,7 +5,7 @@ from . import access
 from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
 from .utils import bcolors, file_exists, export_hdf
 
-from .download import download
+from .download import is_downloadable, download
 
 from .processors import ccle, depmap, gtex, other, tcga
 
@@ -175,6 +175,26 @@ def remove_all():
         remove(dataset["id"])
 
 
+def is_processable(dataset_id):
+    """
+
+    Check if a dataset can be processed.
+
+    Args:
+        dataset_id (str): ID of the dataset
+
+    """
+
+    dataset_row = SCHEMA.loc[dataset_id]
+    dataset_type = dataset_row["type"]
+
+    if dataset_type in ["primary_dataset", "secondary_dataset"]:
+
+        return True
+
+    return False
+
+
 def process(dataset_id, overwrite=False, delete_raw=False):
     """
 
@@ -194,7 +214,7 @@ def process(dataset_id, overwrite=False, delete_raw=False):
     downloaded_name = dataset_row["downloaded_name"]
     dataset_type = dataset_row["type"]
 
-    if dataset_type in ["primary_dataset", "secondary_dataset"]:
+    if is_processable(dataset_id):
 
         output_path = f"{PROCESSED_DIR}/{dataset_id}.h5"
 
@@ -206,37 +226,35 @@ def process(dataset_id, overwrite=False, delete_raw=False):
 
             return
 
+        handler = getattr(Processors, dataset_id, None)
+
+        if handler is not None:
+
+            print(f"Processing {id_bold}")
+
+            check_dependencies(dataset_id)
+
+            if dataset_type in ["primary_dataset"]:
+                df = handler(DOWNLOAD_DIR / downloaded_name)
+
+            elif dataset_type in ["secondary_dataset"]:
+                df = handler()
+
+            export_hdf(dataset_id, df)
+
+            generate_preview(dataset_id)
+
+            if delete_raw:
+
+                remove_raw(dataset_id)
+
         else:
 
-            handler = getattr(Processors, dataset_id, None)
+            print(
+                f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
+            )
 
-            if handler is not None:
-
-                print(f"Processing {id_bold}")
-
-                check_dependencies(dataset_id)
-
-                if dataset_type in ["primary_dataset"]:
-                    df = handler(DOWNLOAD_DIR / downloaded_name)
-
-                elif dataset_type in ["secondary_dataset"]:
-                    df = handler()
-
-                export_hdf(dataset_id, df)
-
-                generate_preview(dataset_id)
-
-                if delete_raw:
-
-                    remove_raw(dataset_id)
-
-            else:
-
-                print(
-                    f"Handler for {id_bold} {bcolors.FAIL}not found{bcolors.ENDC}, skipping"
-                )
-
-                return
+            return
 
 
 def download_and_process(dataset_id, download_kwargs={}, process_kwargs={}):
@@ -255,8 +273,11 @@ def download_and_process(dataset_id, download_kwargs={}, process_kwargs={}):
 
     assert dataset_id in SCHEMA.index, f"{id_bold} is not in the schema."
 
-    download(dataset_id, **download_kwargs)
-    process(dataset_id, **process_kwargs)
+    if is_downloadable(dataset_id):
+        download(dataset_id, **download_kwargs)
+
+    if is_processable(dataset_id):
+        process(dataset_id, **process_kwargs)
 
 
 def download_and_process_all(download_kwargs={}, process_kwargs={}):
