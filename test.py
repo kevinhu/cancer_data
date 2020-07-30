@@ -1,3 +1,3 @@
 import cancer_data
 
-cancer_data.process("depmap_damaging", overwrite=True)
+cancer_data.download_all()

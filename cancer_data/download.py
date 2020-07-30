@@ -51,4 +51,9 @@ def download_all():
 
     for _, dataset in SCHEMA.iterrows():
 
-        download(dataset)
+        dataset_id = dataset["id"]
+        dataset_type = dataset["type"]
+
+        if dataset_type in ["reference", "primary_dataset"]:
+
+            download(dataset_id)
