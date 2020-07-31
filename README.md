@@ -1,6 +1,6 @@
 # cancer_data
 
-This package handles the downloading and processing of several public genomics datasets useful for cancer research.
+This package provides unified methods for accessing popular datasets used in cancer research.
 
 ## Datasets
 
@@ -19,7 +19,7 @@ The goal of this package is to make statistical analysis and coordination of the
 
 1. Harmonization: datasets within a collection have sample IDs reduced to the same format. For instance, all CCLE+DepMap datasets have been modified to use Achilles/Arxspan IDs, rather than cell line names.
 2. Speed: processed datasets are all stored in high-performance [HDF5 format](https://en.wikipedia.org/wiki/Hierarchical_Data_Format), allowing large tables to be loaded orders of magnitude faster than with CSV or TSV formats.
-3. Space: tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format. Compression is also used, resulting in size reductions by factors of over 10 for sparse matrices such as mutation tables.
+3. Space: tables of purely numerical values (e.g. gene expression, methylation, drug sensitivities) are stored in half-precision format. Compression is used for all tables, resulting in size reductions by factors of over 10 for sparse matrices such as mutation tables, and over 50 for highly-redundant tables such as gene-level copy number estimates.
 
 ## How it works
 
@@ -33,18 +33,18 @@ The next steps depend on the `type` of the dataset:
 - `primary_dataset` objects are preprocessed and converted into HDF5 format.
 - `secondary_dataset` objects are defined as being made from `primary_dataset` objects. These are also processed and converted into HDF5 format.
 
-To keep track of which datasets are necessary for producing another, the `dependencies` column specifies the dataset `id`s that are required for making another. For instance, the `ccle_proteomics` dataset is dependent on the `ccle_annotations` dataset for converting cell line names to Achilles IDs. When running the processing pipeline, the script will automatically check that dependencies are met, and raise an error if they are not found.
+To keep track of which datasets are necessary for producing another, the `dependencies` column specifies the dataset `id`s that are required for making another. For instance, the `ccle_proteomics` dataset is dependent on the `ccle_annotations` dataset for converting cell line names to Achilles IDs. When running the processing pipeline, the package will automatically check that dependencies are met, and raise an error if they are not found.
 
 ## Notes
 
 ### Filtering
 Some datasets have filtering applied to reduce their size. These are listed below:
 - CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
-- When constructing binary mutation matrices (`depmap_damaging` and `depmap_hotspot`), a minimum mutation frequency is used to remove especially rare mutations.
+- When constructing binary mutation matrices (`depmap_damaging` and `depmap_hotspot`), a minimum mutation frequency is used to remove especially rare (present in less than four samples) mutations.
 - The TCGA MX splicing dataset is extremely large (approximately 10,000 rows by 900,000 columns), so it has been split column-wise into 8 chunks.
 
 ### System requirements
-The size of the downloaded raw files is approximately 15 GB, and that of the processed HDFs is about 20 GB. On a relatively recent machine with a fast SSD,  processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
+The raw downloaded files occupy approximately 15 GB, and the processed HDFs take up about 10 GB. On a relatively recent machine with a fast SSD,  processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
 
 ## Functions
 
@@ -85,6 +85,8 @@ The size of the downloaded raw files is approximately 15 GB, and that of the pro
 `cancer_data.load(dataset_id **read_hdf_kwargs)`: Load a processed dataset.
 
 `cancer_data.description(dataset_id)`: Get the description of a dataset.
+
+`cancer_data.status()`: Print the statuses (downloaded, processed) of all datasets.
 
 `cancer_data.summary(dataset_id)`: Get a summary of a dataset.
 
