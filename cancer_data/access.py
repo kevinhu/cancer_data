@@ -94,7 +94,7 @@ def status():
 def summary(dataset_id):
     """
 
-    Get the summary info of a dataset.
+    Print the summary info of a dataset.
 
     Args:
         dataset_id (str): ID of the dataset
@@ -168,7 +168,7 @@ def summary(dataset_id):
             ]
         )
 
-    return dataset_summary
+    print(dataset_summary)
 
 
 def schema():
