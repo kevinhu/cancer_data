@@ -7,11 +7,6 @@ reference/*
 **/*.DS_STORE
 
 !.gitignore
-!process_ccle.ipynb
-!process_sanger.ipynb
-!process_depmap.ipynb
-!process_gtex.ipynb
-!process_tcga.ipynb
 !*.md
 
 # Byte-compiled / optimized / DLL files
