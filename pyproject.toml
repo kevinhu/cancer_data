@@ -15,7 +15,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = ">=3.6.1"
 gtfparse = "^1.2.0"
 scipy = "^1.5.1"
 requests = "^2.24.0"
@@ -23,6 +23,7 @@ tqdm = "^4.48.0"
 tables = "^3.6.1"
 xlrd = "^1.2.0"
 pandas = "^1.0.5"
+pre-commit = "^2.7.1"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.16.1"
