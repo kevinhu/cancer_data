@@ -4,7 +4,7 @@ This package provides unified methods for accessing popular datasets used in can
 
 ## Datasets
 
-A complete description of the datasets may be found in [schema.txt](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.txt).
+A complete description of the datasets may be found in [schema.csv](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.csv).
 
 | Collection                                    | Datasets                                                     | Portal                                                       |
 | --------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
