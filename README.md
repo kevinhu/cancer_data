@@ -2,6 +2,8 @@
 
 This package provides unified methods for accessing popular datasets used in cancer research.
 
+**[Full documentation](https://cancer_data.kevinhu.io)**
+
 ## Installation
 
 ```bash
