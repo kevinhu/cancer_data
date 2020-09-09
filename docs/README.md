@@ -2,6 +2,16 @@
 
 This package provides unified methods for accessing popular datasets used in cancer research.
 
+## Installation
+
+```bash
+pip install cancer_data
+```
+
+## System requirements
+
+The raw downloaded files occupy approximately 15 GB, and the processed HDFs take up about 10 GB. On a relatively recent machine with a fast SSD, processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
+
 ## Datasets
 
 A complete description of the datasets may be found in [schema.csv](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.csv).
@@ -44,7 +54,3 @@ Some datasets have filtering applied to reduce their size. These are listed belo
 -   CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
 -   When constructing binary mutation matrices (`depmap_damaging` and `depmap_hotspot`), a minimum mutation frequency is used to remove especially rare (present in less than four samples) mutations.
 -   The TCGA MX splicing dataset is extremely large (approximately 10,000 rows by 900,000 columns), so it has been split column-wise into 8 chunks.
-
-### System requirements
-
-The raw downloaded files occupy approximately 15 GB, and the processed HDFs take up about 10 GB. On a relatively recent machine with a fast SSD, processing all of the files after download takes about 3-4 hours. At least 16 GB of RAM is recommended for handling the large splicing tables.
