@@ -49,8 +49,6 @@ To keep track of which datasets are necessary for producing another, the `depend
 
 ## Notes
 
-### Filtering
-
 Some datasets have filtering applied to reduce their size. These are listed below:
 
 -   CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
