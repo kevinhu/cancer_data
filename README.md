@@ -1,4 +1,6 @@
 # cancer_data
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkevinhu%2Fcancer_data.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkevinhu%2Fcancer_data?ref=badge_shield)
+
 
 This package provides unified methods for accessing popular datasets used in cancer research.
 
@@ -54,3 +56,7 @@ Some datasets have filtering applied to reduce their size. These are listed belo
 -   CCLE, GTEx, and TCGA splicing datasets have been filtered to remove splicing events with many missing values as well as those with low standard deviations.
 -   When constructing binary mutation matrices (`depmap_damaging` and `depmap_hotspot`), a minimum mutation frequency is used to remove especially rare (present in less than four samples) mutations.
 -   The TCGA MX splicing dataset is extremely large (approximately 10,000 rows by 900,000 columns), so it has been split column-wise into 8 chunks.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkevinhu%2Fcancer_data.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkevinhu%2Fcancer_data?ref=badge_large)
