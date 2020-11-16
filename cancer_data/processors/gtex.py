@@ -12,6 +12,7 @@ MIN_VALID_COUNT = 100
 # event for gtex_splicing()
 MIN_STDEV = 0.01
 
+
 def gtex_splicing(raw_path):
     """
 
@@ -89,16 +90,16 @@ class Processors:
     def gtex_2919_manifest(raw_path):
         """
 
-            Process the GTEx 2919 manifest.
+        Process the GTEx 2919 manifest.
 
-            Args:
-                raw_path (str): the complete path to the
-                                raw downloaded file
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
 
-            Returns:
-                Processed DataFrame
+        Returns:
+            Processed DataFrame
 
-            """
+        """
 
         df = pd.read_csv(raw_path, sep="\t")
 

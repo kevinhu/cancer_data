@@ -6,7 +6,6 @@ import pandas as pd
 from .. import access
 from ..utils import parentheses_to_snake
 
-
 # minimum mutation frequency for depmap_damaging()
 # and depmap_hotspot()
 MIN_COUNT_CUTOFF = 4
@@ -191,7 +190,7 @@ class Processors:
     def depmap_damaging():
         """
 
-        Construct binary mutation matrix for 
+        Construct binary mutation matrix for
         DepMap damaging mutations.
 
         Returns:
@@ -227,7 +226,7 @@ class Processors:
     def depmap_hotspot():
         """
 
-        Construct binary mutation matrix for 
+        Construct binary mutation matrix for
         DepMap hotspot mutations.
 
         Returns:

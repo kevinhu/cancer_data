@@ -1,15 +1,15 @@
+from .access import description, load, schema, sources, status, summary, types
 from .download import download, download_all
 from .process import (
+    download_and_process,
     process,
     process_all,
-    download_and_process,
-    remove_raw,
-    remove_processed,
     remove,
-    remove_all_raw,
-    remove_all_processed,
     remove_all,
+    remove_all_processed,
+    remove_all_raw,
+    remove_processed,
+    remove_raw,
 )
-from .access import load, description, status, summary, types, sources, schema
 
 __version__ = "0.1.0"

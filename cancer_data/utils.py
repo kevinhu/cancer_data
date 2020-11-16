@@ -1,10 +1,8 @@
+from functools import reduce
 from hashlib import md5
 from pathlib import Path
 
-from functools import reduce
-
 import requests
-
 import tqdm
 from tqdm import tqdm
 
@@ -129,7 +127,7 @@ def download_from_url(
     """
     Download a file from a URL.
 
-    Shows progress bar and checks md5sum. Also 
+    Shows progress bar and checks md5sum. Also
     checks if file is already downloaded.
 
     Args:

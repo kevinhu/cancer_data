@@ -3,8 +3,8 @@ import tempfile
 import numpy as np
 import pandas as pd
 
-from ..utils import concat_cols, file_exists, export_hdf
 from .. import access
+from ..utils import concat_cols, export_hdf, file_exists
 
 # minimum number of valid samples per
 # splicing event for tcga_splicing()

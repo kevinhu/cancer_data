@@ -1,8 +1,6 @@
-from .config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
-
-from .utils import download_from_url
-
 from .checks import is_downloadable
+from .config import DOWNLOAD_DIR, REFERENCE_DIR, SCHEMA
+from .utils import download_from_url
 
 
 def download(dataset_id):

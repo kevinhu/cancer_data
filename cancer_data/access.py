@@ -1,8 +1,8 @@
 import pandas as pd
 
-from .config import REFERENCE_DIR, DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
-from .utils import bcolors, file_exists
 from .checks import is_downloadable, is_processable
+from .config import DOWNLOAD_DIR, PREVIEW_DIR, PROCESSED_DIR, REFERENCE_DIR, SCHEMA
+from .utils import bcolors, file_exists
 
 
 def load(dataset_id, **read_hdf_kwargs):
@@ -63,7 +63,7 @@ def status():
         id_bold = f"{bcolors.BOLD}{dataset_id}{bcolors.ENDC}"
 
         print(f"{id_bold}:", end="")
-        print((max_id_len-len(dataset_id))*" ",end="")
+        print((max_id_len - len(dataset_id)) * " ", end="")
 
         if is_downloadable(dataset_id):
 
@@ -80,7 +80,7 @@ def status():
 
         else:
 
-            print("\t\t",end="")
+            print("\t\t", end="")
 
         if is_processable(dataset_id):
             if file_exists(PROCESSED_DIR / f"{dataset_id}.h5"):

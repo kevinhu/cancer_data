@@ -2,13 +2,11 @@ import os
 import warnings
 
 from .access import load
-from .config import DOWNLOAD_DIR, PROCESSED_DIR, PREVIEW_DIR, SCHEMA
-from .utils import bcolors, file_exists, export_hdf
-
-from .download import is_downloadable, download
-
-from .processors import ccle, depmap, gtex, other, tcga
 from .checks import is_processable
+from .config import DOWNLOAD_DIR, PREVIEW_DIR, PROCESSED_DIR, SCHEMA
+from .download import download, is_downloadable
+from .processors import ccle, depmap, gtex, other, tcga
+from .utils import bcolors, export_hdf, file_exists
 
 
 class Processors(

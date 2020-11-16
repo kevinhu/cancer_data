@@ -1,5 +1,6 @@
-from gtfparse import read_gtf
 import pandas as pd
+from gtfparse import read_gtf
+
 
 class Processors:
     """

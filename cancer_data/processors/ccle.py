@@ -1,14 +1,12 @@
 import gzip
-import tempfile
 import re
-
+import tempfile
 from collections import defaultdict
 
 import numpy as np
 import pandas as pd
 
 from .. import access
-
 
 # minimum number of valid samples per
 # splicing event for ccle_splicing()
@@ -17,6 +15,7 @@ MIN_VALID_COUNT = 100
 # minimum standard deviation per splicing
 # event for ccle_splicing()
 MIN_STDEV = 0.01
+
 
 class Processors:
     """
