@@ -45,9 +45,6 @@ line_length = 88
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
-[tool.poetry.scripts]
-format = 'poetry run black ./cancer_data'
-
 [tool.poe.tasks]
 black = "black ./cancer_data"
 isort = "isort ./cancer_data"
