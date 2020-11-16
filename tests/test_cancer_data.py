@@ -1,5 +1,3 @@
-from cancer_data import __version__
+import cancer_data
 
-
-def test_version():
-    assert __version__ == '0.1.0'
+cancer_data.process("tcga_mx")

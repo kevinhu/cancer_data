@@ -52,7 +52,7 @@ TCGA_MAP = {
 }
 
 
-def tcga_splicing(raw_path, chunked=False):
+def tcga_splicing(raw_path, preserve_temp=False):
     """
 
     General handler for all TCGA splicing files.
@@ -68,13 +68,33 @@ def tcga_splicing(raw_path, chunked=False):
 
     """
 
-    chunk_iterator = pd.read_csv(raw_path, sep="\t", chunksize=10000)
+    columns = pd.read_csv(raw_path, sep="\t", index_col=0, nrows=0).columns
+
+    dtypes = {}
+
+    for column in columns:
+        if column.startswith("TCGA-"):
+            dtypes[column] = np.float16
+        else:
+            dtypes[column] = "str"
+
+    chunk_iterator = pd.read_csv(
+        raw_path, sep="\t", chunksize=10000, dtype=dtypes, engine="c", low_memory=False
+    )
 
     header = True
 
-    temp = tempfile.NamedTemporaryFile(mode="w+")
+    if preserve_temp:
+        temp = open(str(raw_path) + ".csv", mode="w+")
+    else:
+        temp = tempfile.NamedTemporaryFile(mode="w+")
+
+    chunk_n = 0
 
     for chunk in chunk_iterator:
+
+        print(chunk_n)
+        chunk_n += 1
 
         chunk["exon_id"] = concat_cols(
             chunk,
@@ -105,25 +125,30 @@ def tcga_splicing(raw_path, chunked=False):
 
         nan_counts = chunk.isna().sum(axis=1)
 
-        keep_rows = chunk.index[nan_counts < len(chunk.columns) - MIN_VALID_COUNT]
+        keep_rows = chunk.index[nan_counts < len(chunk) - MIN_VALID_COUNT]
 
-        chunk = chunk.loc[keep_rows]
+        chunk = chunk.filter(keep_rows, axis=0)
 
         stdevs = chunk.std(axis=1)
 
         keep_rows = chunk.index[stdevs >= MIN_STDEV]
 
-        chunk = chunk.loc[keep_rows]
+        chunk = chunk.filter(keep_rows, axis=0)
 
         chunk.to_csv(temp, mode="a", header=header)
 
         if header:
             header = False
 
-    columns = pd.read_csv(temp.name, index_col=0, nrows=0).columns
+    columns = pd.read_csv(temp, index_col=0, nrows=0).columns
     col_dtypes = {x: np.float16 for x in columns}
 
-    merged = pd.read_csv(temp.name, index_col=0, dtype=col_dtypes)
+    if prserve_temp:
+        return columns
+
+    merged = pd.read_csv(
+        temp, index_col=0, dtype=col_dtypes, engine="c", low_memory=False
+    )
 
     temp.close()
 
@@ -390,7 +415,7 @@ class Processors:
 
         """
 
-        return tcga_splicing(raw_path)
+        return tcga_splicing(raw_path, preserve_temp=True)
 
     @staticmethod
     def tcga_mx_chunks():
@@ -406,7 +431,11 @@ class Processors:
         df = access.load("tcga_mx")
 
         cols = np.array(df.columns)
-        col_chunks = np.array_split(cols, 8)
+
+        chunk_size = 200000
+        col_chunks = [
+            cols[i : i + chunk_size] for i in range(0, cols.shape[0], chunk_size)
+        ]
 
         for idx, col_chunk in enumerate(col_chunks):
 
