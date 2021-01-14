@@ -5,3 +5,5 @@ updates:
   schedule:
     interval: daily
     time: "10:00"
+  reviewers:
+    - "kevinhu"
