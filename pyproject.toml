@@ -2,7 +2,7 @@
 name = "cancer_data"
 version = "0.3.0"
 description = "Preprocessing for various cancer genomics datasets"
-authors = ["Kevin Hu <kevinhuwest@gmail.com>"]
+ authors = ["Kevin Hu <kevinhuwest@gmail.com>"]
 
 license = "MIT"
 readme = "README.md"
@@ -44,9 +44,3 @@ line_length = 88
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
-[tool.poe.tasks]
-black = "black ./cancer_data"
-isort = "isort ./cancer_data"
-format = ["black","isort"]
-lint = "pylint ./cancer_data"
