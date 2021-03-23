@@ -174,7 +174,7 @@ class Processors:
 
         """
 
-        df = pd.read_csv(raw_path, sep="\t")
+        df = pd.read_csv(raw_path)
 
         df = df.astype(str)
 
