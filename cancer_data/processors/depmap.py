@@ -275,7 +275,7 @@ class Processors:
 
         df = access.load("depmap_mutations")
 
-        df = df[(df["isCOSMIChotspot"] == True) | (df["isTCGAhotspot"] == True)]
+        df = df[(df["isCOSMIChotspot"] is True) | (df["isTCGAhotspot"] is True)]
 
         # exclude rarely damaged genes
         mut_counts = Counter(df["Hugo_Symbol"])
