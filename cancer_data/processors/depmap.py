@@ -138,6 +138,39 @@ class Processors:
         return df
 
     @staticmethod
+    def depmap_combined_rnai(raw_path):
+        """
+
+        Process DepMap Combined RNAi sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+
+        """
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        depmap_annotations = access.load("depmap_annotations")
+        ccle_to_depmap = dict(
+            zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
+        )
+
+        df.columns = map(ccle_to_depmap.get, df.columns)
+        df.index = df.index.map(parentheses_to_snake)
+
+        df.columns = df.columns.astype(str)
+        df.index = df.index.astype(str)
+
+        df = df.T
+        df = df.astype(np.float16)
+
+        return df
+
+    @staticmethod
     def depmap_gene_tpm(raw_path):
         """
 
