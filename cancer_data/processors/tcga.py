@@ -143,7 +143,7 @@ def tcga_splicing(raw_path, preserve_temp=False):
     columns = pd.read_csv(temp, index_col=0, nrows=0).columns
     col_dtypes = {x: np.float16 for x in columns}
 
-    if prserve_temp:
+    if preserve_temp:
         return columns
 
     merged = pd.read_csv(
