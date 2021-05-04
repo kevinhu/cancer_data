@@ -163,7 +163,7 @@ class Processors:
 
         # SW527 presents as colorectal in depmap_annotations.
         # Cannot map to known cell line.
-        df = df.drop(columns=['SW527_BREAST'])
+        df = df.drop(columns=["SW527_BREAST"])
 
         df.columns = map(ccle_to_depmap.get, df.columns)
         df.index = df.index.map(parentheses_to_snake)
