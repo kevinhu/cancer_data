@@ -70,13 +70,11 @@ def tcga_splicing(raw_path, preserve_temp=False):
 
     columns = pd.read_csv(raw_path, sep="\t", index_col=0, nrows=0).columns
 
-    dtypes = {}
+    dtypes = {
+        column: np.float16 if column.startswith("TCGA-") else "str"
+        for column in columns
+    }
 
-    for column in columns:
-        if column.startswith("TCGA-"):
-            dtypes[column] = np.float16
-        else:
-            dtypes[column] = "str"
 
     chunk_iterator = pd.read_csv(
         raw_path, sep="\t", chunksize=10000, dtype=dtypes, engine="c", low_memory=False
@@ -89,13 +87,9 @@ def tcga_splicing(raw_path, preserve_temp=False):
     else:
         temp = tempfile.NamedTemporaryFile(mode="w+")
 
-    chunk_n = 0
-
-    for chunk in chunk_iterator:
+    for chunk_n, chunk in enumerate(chunk_iterator):
 
         print(chunk_n)
-        chunk_n += 1
-
         chunk["exon_id"] = concat_cols(
             chunk,
             [
@@ -443,6 +437,4 @@ class Processors:
 
             export_hdf(f"tcga_mx_{idx}", chunk)
 
-        chunks_info = pd.DataFrame(index=range(8))
-
-        return chunks_info
+        return pd.DataFrame(index=range(8))
