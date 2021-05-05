@@ -138,6 +138,45 @@ class Processors:
         return df
 
     @staticmethod
+    def depmap_combined_rnai(raw_path):
+        """
+
+        Process combined DepMap RNAi sensitivities.
+
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+
+        Returns:
+            Processed DataFrame
+        """
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        depmap_annotations = access.load("depmap_annotations")
+        ccle_to_depmap = dict(
+            zip(depmap_annotations["CCLE_Name"], depmap_annotations.index)
+        )
+        ccle_to_depmap["AZ521_STOMACH"] = "ACH-001015"
+        ccle_to_depmap["GISTT1_GASTROINTESTINAL_TRACT"] = "ACH-002332"
+        ccle_to_depmap["MB157_BREAST"] = "ACH-000621"
+
+        # SW527 presents as colorectal in depmap_annotations.
+        # Cannot map to known cell line.
+        df = df.drop(columns=["SW527_BREAST"])
+
+        df.columns = map(ccle_to_depmap.get, df.columns)
+        df.index = df.index.map(parentheses_to_snake)
+
+        df.columns = df.columns.astype(str)
+        df.index = df.index.astype(str)
+
+        df = df.T
+        df = df.astype(np.float16)
+
+        return df
+
+    @staticmethod
     def depmap_gene_tpm(raw_path):
         """
 
@@ -236,7 +275,7 @@ class Processors:
 
         df = access.load("depmap_mutations")
 
-        df = df[(df["isCOSMIChotspot"] == True) | (df["isTCGAhotspot"] == True)]
+        df = df[(df["isCOSMIChotspot"] is True) | (df["isTCGAhotspot"] is True)]
 
         # exclude rarely damaged genes
         mut_counts = Counter(df["Hugo_Symbol"])
