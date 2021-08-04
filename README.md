@@ -35,7 +35,7 @@ The goal of this package is to make statistical analysis and coordination of the
 
 ## How it works
 
-The [schema](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.txt) serves as the reference point for all datasets used. Each dataset is identified by a unique `id` column, which also serves as its access identifier.
+The [schema](https://github.com/kevinhu/cancer-data/blob/master/cancer_data/schema.csv) serves as the reference point for all datasets used. Each dataset is identified by a unique `id` column, which also serves as its access identifier.
 
 Datasets are downloaded from the location specified in `download_url`, after which they are checked against the provided `downloaded_md5` hash.
 
