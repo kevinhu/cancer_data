@@ -275,7 +275,7 @@ class Processors:
 
         df = access.load("depmap_mutations")
 
-        df = df[(df["isCOSMIChotspot"] is True) | (df["isTCGAhotspot"] is True)]
+        df = df[(df["isCOSMIChotspot"] == True) | (df["isTCGAhotspot"] == True)]
 
         # exclude rarely damaged genes
         mut_counts = Counter(df["Hugo_Symbol"])
@@ -416,6 +416,48 @@ class Processors:
 
         df = pd.read_csv(raw_path, index_col=0)
         df.columns = map(parentheses_to_snake, df.columns)
+
+        df = df.astype(np.float16)
+
+        return df
+
+    @staticmethod
+    def depmap_sanger_ceres(raw_path: str) -> pd.DataFrame:
+        """
+        Process Sanger CRISPR gene dependencies (CERES)
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+        Returns:
+            Processed DataFrame
+        """
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        df.columns = map(parentheses_to_snake, df.columns)
+
+        df.index = df.index.astype(str)
+
+        df = df.astype(np.float16)
+
+        return df
+
+    @staticmethod
+    def depmap_sanger_chronos(raw_path: str) -> pd.DataFrame:
+        """
+        Process Sanger CRISPR gene dependencies (Chronos)
+        Args:
+            raw_path (str): the complete path to the
+                            raw downloaded file
+        Returns:
+            Processed DataFrame
+        """
+
+        df = pd.read_csv(raw_path, index_col=0)
+
+        df.columns = map(parentheses_to_snake, df.columns)
+
+        df.index = df.index.astype(str)
 
         df = df.astype(np.float16)
 
